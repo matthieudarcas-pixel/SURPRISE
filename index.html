@@ -159,29 +159,49 @@ function verifier(){
     courant.reponses.some(r =>
     r.toLowerCase() === reponse);
 
-   if(correcte){
-
-    document.getElementById("zone").innerHTML = `
-        <video
-            id="videoSouvenir"
-            autoplay
-            controls
-            playsinline
-            width="100%">
-            ${courant.video}
-        </video>
-    `;
-
-    setTimeout(() => {
-        const video =
-        document.getElementById("videoSouvenir");
-
-        video.play();
-
-        if (video.requestFullscreen) {
-            video.requestFullscreen();
-        }
-    }, 300);
+   JavaScript
+1
+if(correcte){
+2
+ 
+3
+document.getElementById("zone").innerHTML = `
+4
+<video
+5
+id="videoSouvenir"
+6
+autoplay
+7
+controls
+8
+playsinline
+9
+width="100%">
+10
+${courant.video}
+11
+</video>
+12
+`;
+13
+ 
+14
+const video =
+15
+document.getElementById("videoSouvenir");
+16
+ 
+17
+video.addEventListener("loadeddata", () => {
+18
+video.play();
+19
+});
+20
+ 
+21
+}
 }
 
 }
