@@ -6,6 +6,7 @@
 <title>Débloque ton souvenir</title>
 
 <style>
+
 body{
     font-family:Arial,sans-serif;
     background:#0f172a;
@@ -46,29 +47,31 @@ input{
 
 button{
     padding:12px 20px;
-    margin-left:10px;
+    margin-top:10px;
     cursor:pointer;
 }
 
 video{
     margin-top:20px;
     width:100%;
-    max-width:800px;
+    max-width:900px;
 }
 
 .reussi{
     color:#22c55e;
     font-weight:bold;
+    margin-top:20px;
 }
 
 .erreur{
     color:#ef4444;
     font-weight:bold;
+    margin-top:20px;
 }
-</style>
 
+</style>
 </head>
-<html>
+
 <body>
 
 <h1>🎬 Débloque ton souvenir</h1>
@@ -80,33 +83,28 @@ video{
 <script>
 
 const data = [
-
 {
-    prenom:"Ugo",
-    enigme:"Vomi régulier sur une route particulière lors de vos épopées en voiture.",
-    reponses:[
+    prenom: "Ugo",
+    enigme: "Vomi régulier sur une route particulière lors de vos épopées en voiture.",
+    reponses: [
         "banquette arrière",
         "banquette arriere",
         "route de jouques"
     ],
-    video:"ugo.mp4"
+    video: "ugo.mp4"
 }
-
 ];
 
 let courant = null;
 
 const people = document.getElementById("people");
 
-data.forEach((p,i)=>{
-
+data.forEach((p, i) => {
     people.innerHTML += `
         <div class="card" onclick="ouvrir(${i})">
             🔒 ${p.prenom}
         </div>
-        
     `;
-
 });
 
 function ouvrir(i){
@@ -118,7 +116,11 @@ function ouvrir(i){
 
         <p>${courant.enigme}</p>
 
-        <input id="rep" placeholder="Votre réponse">
+        <input
+            id="rep"
+            placeholder="Votre réponse">
+
+        <br>
 
         <button onclick="verifier()">
             Valider
@@ -130,16 +132,16 @@ function ouvrir(i){
 
 function verifier(){
 
-    let reponse =
-    document.getElementById("rep")
-    .value
-    .trim()
-    .toLowerCase();
+    const reponse =
+        document.getElementById("rep")
+        .value
+        .trim()
+        .toLowerCase();
 
-    let correcte =
-    courant.reponses.some(r =>
-        r.toLowerCase() === reponse
-    );
+    const correcte =
+        courant.reponses.some(r =>
+            r.toLowerCase() === reponse
+        );
 
     if(correcte){
 
@@ -149,7 +151,8 @@ function verifier(){
             </p>
 
             <video controls>
-                <source src="ugo.mp4" type="video/mp4">
+                <source src="${courant.video}" type="video/mp4">
+                Votre navigateur ne supporte pas la vidéo.
             </video>
         `;
 
@@ -161,5 +164,9 @@ function verifier(){
             </p>
         `;
     }
-
 }
+
+</script>
+
+</body>
+</html>
