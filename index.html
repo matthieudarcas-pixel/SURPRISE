@@ -159,27 +159,30 @@ function verifier(){
     courant.reponses.some(r =>
     r.toLowerCase() === reponse);
 
-    if(correcte){
+   if(correcte){
 
-        document.getElementById("resultat").innerHTML = `
-            <p class="reussi">
-                ✅ Bonne réponse !
-            </p>
+    document.getElementById("zone").innerHTML = `
+        <video
+            id="videoSouvenir"
+            autoplay
+            controls
+            playsinline
+            width="100%">
+            ${courant.video}
+        </video>
+    `;
 
-            <video controls>
-                <source src="${courant.video}" type="video/mp4">
-            </video>
-        `;
+    setTimeout(() => {
+        const video =
+        document.getElementById("videoSouvenir");
 
-    }else{
+        video.play();
 
-        document.getElementById("resultat").innerHTML = `
-            <p class="erreur">
-                ❌ Mauvaise réponse
-            </p>
-        `;
-
-    }
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        }
+    }, 300);
+}
 
 }
 
