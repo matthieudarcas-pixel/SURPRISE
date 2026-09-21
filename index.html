@@ -1,5 +1,189 @@
-Add file
-2
-▼
-3
-Upload files
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Débloque ton souvenir</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#0f172a;
+    color:white;
+    text-align:center;
+    padding:40px;
+}
+
+h1{
+    margin-bottom:40px;
+}
+
+.card{
+    display:inline-block;
+    width:250px;
+    background:#1e293b;
+    padding:20px;
+    margin:10px;
+    border-radius:15px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:scale(1.05);
+    background:#334155;
+}
+
+#zone{
+    margin-top:40px;
+}
+
+input{
+    padding:12px;
+    width:300px;
+    max-width:90%;
+}
+
+button{
+    padding:12px 20px;
+    margin-left:10px;
+    cursor:pointer;
+}
+
+video{
+    margin-top:20px;
+    width:100%;
+    max-width:800px;
+}
+
+.reussi{
+    color:#22c55e;
+    font-weight:bold;
+}
+
+.erreur{
+    color:#ef4444;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+<body>
+
+<h1>🎬 Débloque ton souvenir</h1>
+
+<div id="people"></div>
+
+<div id="zone"></div>
+
+<script>
+
+const data = [
+
+{
+    prenom:"Ugo",
+    enigme:"Vomi régulier sur une route particulière lors de vos épopées en voiture.",
+    reponses:[
+        "banquette arrière",
+        "banquette arriere",
+        "route de jouques"
+    ],
+    video:"ugo.mp4"
+},
+
+{
+    prenom:"Paul",
+    enigme:"Ville où la bière a failli coûter ton mariage.",
+    reponses:[
+        "prague"
+    ],
+    video:"paul.mp4"
+},
+
+{
+    prenom:"Emma",
+    enigme:"Ton cri légendaire lors du saut.",
+    reponses:[
+        "maman"
+    ],
+    video:"emma.mp4"
+}
+
+];
+
+let courant = null;
+
+const people = document.getElementById("people");
+
+data.forEach((p,i)=>{
+
+    people.innerHTML += `
+        <div class="card" onclick="ouvrir(${i})">
+            🔒 ${p.prenom}
+        </div>
+    `;
+
+});
+
+function ouvrir(i){
+
+    courant = data[i];
+
+    document.getElementById("zone").innerHTML = `
+        <h2>${courant.prenom}</h2>
+
+        <p>${courant.enigme}</p>
+
+        <input id="rep" placeholder="Votre réponse">
+
+        <button onclick="verifier()">
+            Valider
+        </button>
+
+        <div id="resultat"></div>
+    `;
+
+}
+
+function verifier(){
+
+    let reponse =
+    document.getElementById("rep")
+    .value
+    .trim()
+    .toLowerCase();
+
+    let correcte =
+    courant.reponses.some(r =>
+    r.toLowerCase() === reponse);
+
+    if(correcte){
+
+        document.getElementById("resultat").innerHTML = `
+            <p class="reussi">
+                ✅ Bonne réponse !
+            </p>
+
+            <video controls>
+                <source src="${courant.video}" type="video/mp4">
+            </video>
+        `;
+
+    }else{
+
+        document.getElementById("resultat").innerHTML = `
+            <p class="erreur">
+                ❌ Mauvaise réponse
+            </p>
+        `;
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
