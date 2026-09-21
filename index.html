@@ -1,23 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Test GitHub Pages</title>
-</head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Débloque ton souvenir</title>
 
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#0f172a;
+    color:white;
+    text-align:center;
+    padding:40px;
+}
+
+h1{
+    margin-bottom:40px;
+}
+
+.card{
+    display:inline-block;
+    width:250px;
+    background:#1e293b;
+    padding:20px;
+    margin:10px;
+    border-radius:15px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:scale(1.05);
+    background:#334155;
+}
+
+#zone{
+    margin-top:40px;
+}
+
+input{
+    padding:12px;
+    width:300px;
+    max-width:90%;
+}
+
+button{
+    padding:12px 20px;
+    margin-left:10px;
+    cursor:pointer;
+}
+
+video{
+    margin-top:20px;
+    width:100%;
+    max-width:800px;
+}
+
+.reussi{
+    color:#22c55e;
+    font-weight:bold;
+}
+
+.erreur{
+    color:#ef4444;
+    font-weight:bold;
+}
+
+</style>
+</head>
 <body>
 
-<h1 style="color:red">
-ÇA MARCHE !
-</h1>
+<h1>🎬 Débloque ton souvenir</h1>
 
-<p>
-Le site fonctionne.
-</p>
+<div id="people"></div>
 
-ugo.mp4
-Voir la vidéo Ugo
-</a>
+<div id="zone"></div>
 
-</body>
-</html>
+<script>
+
+const data = [
+
+{
+    prenom:"Ugo",
+    enigme:"Vomi régulier sur une route particulière lors de vos épopées en voiture.",
+    reponses:[
+        "banquette arrière",
+        "banquette arriere",
+        "route de jouques"
+    ],
+    video:"ugo.mp4"
+},
+
+{
