@@ -93,3 +93,98 @@ const data = [
 },
 
 {
+    prenom:"Paul",
+    enigme:"Ville où la bière a failli coûter ton mariage.",
+    reponses:[
+        "prague"
+    ],
+    video:"paul.mp4"
+},
+
+{
+    prenom:"Emma",
+    enigme:"Ton cri légendaire lors du saut.",
+    reponses:[
+        "maman"
+    ],
+    video:"emma.mp4"
+}
+
+];
+
+let courant = null;
+
+const people = document.getElementById("people");
+
+data.forEach((p,i)=>{
+
+    people.innerHTML += `
+        <div class="card" onclick="ouvrir(${i})">
+            🔒 ${p.prenom}
+        </div>
+    `;
+
+});
+
+function ouvrir(i){
+
+    courant = data[i];
+
+    document.getElementById("zone").innerHTML = `
+        <h2>${courant.prenom}</h2>
+
+        <p>${courant.enigme}</p>
+
+        <input id="rep" placeholder="Votre réponse">
+
+        <button onclick="verifier()">
+            Valider
+        </button>
+
+        <div id="resultat"></div>
+    `;
+
+}
+
+function verifier(){
+
+    let reponse =
+    document.getElementById("rep")
+    .value
+    .trim()
+    .toLowerCase();
+
+    let correcte =
+    courant.reponses.some(r =>
+    r.toLowerCase() === reponse);
+
+    if(correcte){
+
+        document.getElementById("resultat").innerHTML = `
+            <p class="reussi">
+                ✅ Bonne réponse !
+            </p>
+
+            <video controls>
+                <source src="${courant.video}" type="video/mp4">
+            </video>
+        `;
+
+    }else{
+
+        document.getElementById("resultat").innerHTML = `
+            <p class="erreur">
+                ❌ Mauvaise réponse
+            </p>
+        `;
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+
+{
