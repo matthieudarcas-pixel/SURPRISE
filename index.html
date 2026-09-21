@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Débloque ton souvenir</title>
 
 <style>
@@ -28,6 +30,7 @@ h1{
     border-radius:15px;
     cursor:pointer;
     transition:0.3s;
+    font-size:20px;
 }
 
 .card:hover{
@@ -52,139 +55,17 @@ button{
 }
 
 video{
-    margin-top:20px;
     width:100%;
-    max-width:800px;
+    max-width:1200px;
+    border-radius:15px;
+    margin-top:20px;
 }
 
 .reussi{
     color:#22c55e;
     font-weight:bold;
+    font-size:24px;
 }
 
 .erreur{
-    color:#ef4444;
-    font-weight:bold;
-}
-
-</style>
-
-</head>
-<body>
-
-<h1>🎬 Débloque ton souvenir</h1>
-
-<div id="people"></div>
-
-<div id="zone"></div>
-
-<script>
-
-const data = [
-
-{
-    prenom:"Ugo",
-    enigme:"Vomi régulier sur une route particulière lors de vos épopées en voiture.",
-    reponses:[
-        "banquette arrière",
-        "banquette arriere",
-        "route de jouques"
-    ],
-    video:"ugo.mp4"
-},
-
-{
-    prenom:"Paul",
-    enigme:"Ville où la bière a failli coûter ton mariage.",
-    reponses:[
-        "prague"
-    ],
-    video:"paul.mp4"
-},
-
-{
-    prenom:"Emma",
-    enigme:"Ton cri légendaire lors du saut.",
-    reponses:[
-        "maman"
-    ],
-    video:"emma.mp4"
-}
-
-];
-
-let courant = null;
-
-const people = document.getElementById("people");
-
-data.forEach((p,i)=>{
-
-    people.innerHTML += `
-        <div class="card" onclick="ouvrir(${i})">
-            🔒 ${p.prenom}
-        </div>
-    `;
-
-});
-
-function ouvrir(i){
-
-    courant = data[i];
-
-    document.getElementById("zone").innerHTML = `
-        <h2>${courant.prenom}</h2>
-
-        <p>${courant.enigme}</p>
-
-        <input id="rep" placeholder="Votre réponse">
-
-        <button onclick="verifier()">
-            Valider
-        </button>
-
-        <div id="resultat"></div>
-    `;
-
-}
-
-function verifier(){
-
-    let reponse =
-    document.getElementById("rep")
-    .value
-    .trim()
-    .toLowerCase();
-
-    let correcte =
-    courant.reponses.some(r =>
-    r.toLowerCase() === reponse);
-
-   JavaScript
-if(correcte){
-
-    document.getElementById("zone").innerHTML = `
-        <video
-            id="videoSouvenir"
-            autoplay
-            controls
-            playsinline
-            width="100%">
-            ${courant.video}
-        </video>
-    `;
-
-    const video =
-    document.getElementById("videoSouvenir");
-
-    video.addEventListener("loadeddata", () => {
-        video.play();
-    });
-
-}
-
-}
-
-</script>
-
-</body>
-</html>
+    color:#ef4444
