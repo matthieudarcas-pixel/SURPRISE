@@ -1,13 +1,106 @@
-<!DOCTYPE html>
+<!DOCTYPE**tml>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Test</title>
+<met**charset="UTF-8">
+<meta name="view**rt" content="width=device-width,**nitial-scale=1.0">
+<title>Débloqu**ton souvenir</title>
+
+<style>
+bod**
+    font-family:Arial,sans-serif**    background**0f172a;
+    color:white;
+    text**lign:center;
+    padding**0px;
+}
+
+.card{
+    display:inline**lock;
+    width**50px;
+    background:#1e293b;
+   **adding**0px;
+    margin:10px;
+    border-**dius:15px;
+   **ursor:pointer;
+}
+
+.card:hover{
+  **background:#334155;
+}
+
+**put{
+    padding:10px;
+    width**00px;
+}
+
+button{
+    padding**0px **px;
+}
+
+video{
+    width**0%;
+    max-width:1000px;
+    mar**n**op:20px;
+}
+</style**
 </head>
 
-<body style="background:black;text-align:center;">
+<body>
 
-<h1 style="color:white">Test vidéo</h1>
+<h**🎬 Débloque ton souvenir</h1>
 
-<video controls autoplay width="800">
-    <source src="ugo.mp4" type="video/
+<d** class="**rd" onclick="ouvrir()">
+🔒 Ugo**/div**
+<div id="zone"></div>
+
+<script>
+**unction ouvrir(){
+
+    document**etElementById("zone").innerHTML =**
+        <h2>Ugo</h2>
+
+       **p>
+**          Vomi régulier sur une r**te particulière lors de vos épopé** en voiture.
+        </p>
+
+      **<input id="rep">
+
+        <button**nclick="verifier()">
+            **lider
+        </button>
+
+       **div id="resultat"></div>
+    `;
+}**function verifier(){
+
+    const**ep =
+    document.getElementById(**ep")
+    .value
+    .trim()
+    .**LowerCase();
+
+    if(
+        rep**="route de jouques" ||
+        re**=="banquette arrière" ||
+       **ep==="banquette arriere"
+    ){
+
+**      document**etElementById("zone").innerHTML =**
+            <h2>🎉 Bravo !</h2>
+**           <video**d="video" controls autoplay>
+    **          <source src="ugo.mp** type="video/mp4">
+            </**deo>
+        `;
+
+        const v **        document.getElementById("**deo");
+
+        v.play().catch(()**{});
+
+    }else{
+
+        documen**getElementById("resultat").innerH**L =
+        "❌ Mauvaise réponse";**    }
+}
+
+</script**
+</**dy>
+</html>
