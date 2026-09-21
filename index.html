@@ -6,7 +6,6 @@
 <title>Débloque ton souvenir</title>
 
 <style>
-
 body{
     font-family:Arial,sans-serif;
     background:#0f172a;
@@ -66,8 +65,8 @@ video{
     color:#ef4444;
     font-weight:bold;
 }
-
 </style>
+
 </head>
 <body>
 
@@ -90,24 +89,6 @@ const data = [
         "route de jouques"
     ],
     video:"ugo.mp4"
-},
-
-{
-    prenom:"Paul",
-    enigme:"Ville où la bière a failli coûter ton mariage.",
-    reponses:[
-        "prague"
-    ],
-    video:"paul.mp4"
-},
-
-{
-    prenom:"Emma",
-    enigme:"Ton cri légendaire lors du saut.",
-    reponses:[
-        "maman"
-    ],
-    video:"emma.mp4"
 }
 
 ];
@@ -156,7 +137,8 @@ function verifier(){
 
     let correcte =
     courant.reponses.some(r =>
-    r.toLowerCase() === reponse);
+        r.toLowerCase() === reponse
+    );
 
     if(correcte){
 
@@ -166,7 +148,7 @@ function verifier(){
             </p>
 
             <video controls>
-                <source src="${courant.video}" type="video/mp4">
+                <source src="ugo.mp4" type="video/mp4">
             </video>
         `;
 
@@ -186,5 +168,3 @@ function verifier(){
 
 </body>
 </html>
-
-{
