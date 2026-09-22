@@ -12,44 +12,27 @@
 
     <title>Débloque ton souvenir</title>
 
-    <!-- Feuille de style Leaflet -->
+
+    <!--
+    ==================================================
+    FEUILLE DE STYLE LEAFLET
+    ==================================================
+    -->
+
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
     >
 
+
     <style>
-/*
-==================================================
-ÉTIQUETTE DES NOMS SUR LA CARTE
-==================================================
-*/
 
-.liste-souvenirs {
-    background: rgba(15, 23, 42, 0.95);
-    color: white;
-    border: 2px solid #22c55e;
-    border-radius: 10px;
-    padding: 8px 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-    font-size: 14px;
-    font-weight: bold;
-    line-height: 1.5;
-    white-space: nowrap;
-}
+        /*
+        ==================================================
+        STYLE GÉNÉRAL
+        ==================================================
+        */
 
-.liste-souvenirs::before {
-    display: none;
-}
-
-.liste-souvenirs .nom-personne {
-    display: block;
-}
-
-.nombre-souvenirs {
-    color: #facc15;
-    margin-bottom: 4px;
-}
         body {
             font-family: Arial, sans-serif;
             background: #0f172a;
@@ -66,6 +49,13 @@
         h2 {
             margin-top: 30px;
         }
+
+
+        /*
+        ==================================================
+        BOUTONS DES PERSONNES
+        ==================================================
+        */
 
         #people {
             display: flex;
@@ -101,6 +91,13 @@
             border-color: #22c55e;
         }
 
+
+        /*
+        ==================================================
+        ZONE DE L'ÉNIGME
+        ==================================================
+        */
+
         #zone {
             margin: 40px auto 0;
             max-width: 1000px;
@@ -132,6 +129,13 @@
             background: #1d4ed8;
         }
 
+
+        /*
+        ==================================================
+        VIDÉO
+        ==================================================
+        */
+
         video {
             display: block;
             margin: 20px auto 0;
@@ -141,6 +145,13 @@
             background: black;
             border-radius: 15px;
         }
+
+
+        /*
+        ==================================================
+        MESSAGES
+        ==================================================
+        */
 
         .reussi {
             color: #22c55e;
@@ -161,6 +172,13 @@
             font-weight: bold;
             margin-top: 20px;
         }
+
+
+        /*
+        ==================================================
+        CARTE DES SOUVENIRS
+        ==================================================
+        */
 
         #section-carte {
             max-width: 1100px;
@@ -194,6 +212,62 @@
             font-weight: bold;
         }
 
+
+        /*
+        ==================================================
+        LISTE VISIBLE DES NOMS SUR LA CARTE
+        ==================================================
+        */
+
+        .liste-souvenirs {
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            border: 2px solid #22c55e;
+            border-radius: 10px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.5;
+            white-space: nowrap;
+        }
+
+        /*
+        Suppression de la petite flèche blanche
+        de l'étiquette Leaflet.
+        */
+
+        .liste-souvenirs::before {
+            display: none;
+        }
+
+        .liste-souvenirs .nom-personne {
+            display: block;
+            text-align: left;
+        }
+
+        .liste-souvenirs .titre-lieu {
+            display: block;
+            color: #facc15;
+            margin-bottom: 4px;
+            text-align: left;
+        }
+
+        .liste-souvenirs .nombre-souvenirs {
+            display: block;
+            color: #94a3b8;
+            margin-bottom: 5px;
+            font-size: 12px;
+            text-align: left;
+        }
+
+
+        /*
+        ==================================================
+        ADAPTATION POUR TÉLÉPHONE
+        ==================================================
+        */
+
         @media screen and (max-width: 600px) {
 
             body {
@@ -215,29 +289,58 @@
             #map {
                 height: 420px;
             }
+
+            .liste-souvenirs {
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+
         }
 
     </style>
 
 </head>
 
+
 <body>
+
+
+    <!--
+    ==================================================
+    TITRE
+    ==================================================
+    -->
 
     <h1>🎬 Débloque ton souvenir</h1>
 
-    <!-- Les boutons des personnes apparaîtront ici -->
+
+    <!--
+    Les boutons des personnes apparaissent ici.
+    -->
+
     <div id="people"></div>
 
-    <!-- Les énigmes et les vidéos apparaîtront ici -->
+
+    <!--
+    L'énigme et la vidéo apparaissent ici.
+    -->
+
     <div id="zone"></div>
 
-    <!-- Carte des souvenirs -->
+
+    <!--
+    ==================================================
+    CARTE
+    ==================================================
+    -->
+
     <div id="section-carte">
 
         <h2>🗺️ La carte des souvenirs</h2>
 
         <p>
-            Chaque souvenir débloqué fait apparaître un nouveau point sur la carte.
+            Chaque souvenir débloqué fait apparaître
+            un nouveau point sur la carte.
         </p>
 
         <div id="map"></div>
@@ -252,8 +355,21 @@
 
     </div>
 
-    <!-- Script JavaScript Leaflet -->
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!--
+    ==================================================
+    SCRIPT LEAFLET
+    ==================================================
+
+    Attention :
+
+    Il faut bien écrire leaflet.js ici.
+    Il ne faut surtout pas écrire leaflet.css.
+    -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/script>
+
 
     <script>
 
@@ -262,15 +378,19 @@
         DONNÉES DES PERSONNES
         ==================================================
 
-        À modifier pour chaque personne :
+        Pour chaque personne, tu dois compléter :
 
-        enigme
-        reponses
-        codePostal
+        1. enigme
+        2. reponses
+        3. codePostal
 
-        Le nom indiqué après "video" doit correspondre
-        exactement au nom du fichier présent sur GitHub.
+        Le nom de la vidéo doit correspondre exactement
+        au nom du fichier présent dans GitHub.
+
+        Pour regrouper plusieurs personnes sur le même
+        point, donne-leur exactement le même code postal.
         */
+
 
         const data = [
 
@@ -288,8 +408,9 @@
 
                 video: "ugo.mp4",
 
-                codePostal: "83560"
+                codePostal: "00000"
             },
+
 
             {
                 prenom: "Lalou",
@@ -303,8 +424,9 @@
 
                 video: "lalou.mp4",
 
-                codePostal: "78000"
+                codePostal: "00000"
             },
+
 
             {
                 prenom: "Granny",
@@ -318,8 +440,9 @@
 
                 video: "granny.mp4",
 
-                codePostal: "83560"
+                codePostal: "00000"
             },
+
 
             {
                 prenom: "Clotilde et Manu",
@@ -333,8 +456,9 @@
 
                 video: "clotildeetmanu.mp4",
 
-                codePostal: "83560"
+                codePostal: "00000"
             },
+
 
             {
                 prenom: "Granny et Papou",
@@ -348,8 +472,9 @@
 
                 video: "granny et papou.mp4",
 
-                codePostal: "83560"
+                codePostal: "00000"
             },
+
 
             {
                 prenom: "Mamounette",
@@ -363,8 +488,9 @@
 
                 video: "mamounette.mp4",
 
-                codePostal: "84095"
+                codePostal: "00000"
             },
+
 
             {
                 prenom: "Joseph Noia",
@@ -378,7 +504,7 @@
 
                 video: "josephnoia.mp4",
 
-                codePostal: "84095"
+                codePostal: "00000"
             }
 
         ];
@@ -396,11 +522,29 @@
 
         let carteDisponible = false;
 
-        const marqueurs = {};
+
+        /*
+        Cette variable contient un seul point
+        pour chaque code postal.
+
+        Exemple :
+
+        lieuxParCodePostal["31000"]
+        */
+
+        const lieuxParCodePostal = {};
+
+
+        /*
+        Cette liste permet de savoir quelles personnes
+        ont déjà été débloquées.
+        */
 
         const souvenirsDebloques = new Set();
 
-        const people = document.getElementById("people");
+
+        const people =
+            document.getElementById("people");
 
 
         /*
@@ -408,33 +552,45 @@
         AFFICHAGE DES BOUTONS DES PERSONNES
         ==================================================
 
-        Les boutons sont créés avant la carte.
+        Cette partie est exécutée avant la carte.
 
-        Même si la carte ne fonctionne pas,
-        les énigmes et les vidéos restent utilisables.
+        Ainsi, même si la carte ne fonctionne pas,
+        les boutons et les vidéos restent disponibles.
         */
 
         data.forEach(function(personne, index) {
 
-            const cartePersonne = document.createElement("div");
+            const cartePersonne =
+                document.createElement("div");
 
             cartePersonne.className = "card";
 
-            cartePersonne.id = "personne-" + index;
+            cartePersonne.id =
+                "personne-" + index;
 
             cartePersonne.innerHTML = `
-                <span id="cadenas-${index}">🔒</span>
-                <span>${personne.prenom}</span>
+
+                <span id="cadenas-${index}">
+                    🔒
+                </span>
+
+                <span>
+                    ${personne.prenom}
+                </span>
             `;
 
             cartePersonne.addEventListener(
                 "click",
                 function() {
+
                     ouvrir(index);
+
                 }
             );
 
-            people.appendChild(cartePersonne);
+            people.appendChild(
+                cartePersonne
+            );
 
         });
 
@@ -451,11 +607,16 @@
 
             courant.index = index;
 
+
             document.getElementById("zone").innerHTML = `
 
-                <h2>${courant.prenom}</h2>
+                <h2>
+                    ${courant.prenom}
+                </h2>
 
-                <p>${courant.enigme}</p>
+                <p>
+                    ${courant.enigme}
+                </p>
 
                 <input
                     id="rep"
@@ -476,31 +637,44 @@
                 <div id="resultat"></div>
             `;
 
-            const champReponse = document.getElementById("rep");
+
+            const champReponse =
+                document.getElementById("rep");
+
 
             champReponse.focus();
+
 
             champReponse.addEventListener(
                 "keydown",
                 function(event) {
 
                     if (event.key === "Enter") {
+
                         verifier();
+
                     }
+
                 }
             );
 
-            document.getElementById("zone").scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
+
+            document
+                .getElementById("zone")
+                .scrollIntoView({
+
+                    behavior: "smooth",
+
+                    block: "start"
+
+                });
 
         }
 
 
         /*
         ==================================================
-        NORMALISATION DES RÉPONSES
+        NORMALISATION DU TEXTE
         ==================================================
 
         Cette fonction ignore :
@@ -513,11 +687,22 @@
         function normaliserTexte(texte) {
 
             return String(texte)
+
                 .trim()
+
                 .toLowerCase()
+
                 .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .replace(/\s+/g, " ");
+
+                .replace(
+                    /[\u0300-\u036f]/g,
+                    ""
+                )
+
+                .replace(
+                    /\s+/g,
+                    " "
+                );
 
         }
 
@@ -531,28 +716,47 @@
         function verifier() {
 
             if (!courant) {
+
                 return;
+
             }
 
-            const champReponse = document.getElementById("rep");
 
-            const resultat = document.getElementById("resultat");
+            const champReponse =
+                document.getElementById("rep");
 
-            const reponseUtilisateur = normaliserTexte(
-                champReponse.value
-            );
 
-            const correcte = courant.reponses.some(
-                function(reponseAcceptee) {
+            const resultat =
+                document.getElementById("resultat");
 
-                    return normaliserTexte(reponseAcceptee)
-                        === reponseUtilisateur;
-                }
-            );
+
+            const reponseUtilisateur =
+                normaliserTexte(
+                    champReponse.value
+                );
+
+
+            const correcte =
+                courant.reponses.some(
+
+                    function(reponseAcceptee) {
+
+                        return normaliserTexte(
+                            reponseAcceptee
+                        ) === reponseUtilisateur;
+
+                    }
+
+                );
+
 
             if (correcte) {
 
-                const adresseVideo = encodeURI(courant.video);
+                const adresseVideo =
+                    encodeURI(
+                        courant.video
+                    );
+
 
                 resultat.innerHTML = `
 
@@ -571,7 +775,8 @@
                             type="video/mp4"
                         >
 
-                        Votre navigateur ne supporte pas cette vidéo.
+                        Votre navigateur ne supporte
+                        pas cette vidéo.
 
                     </video>
 
@@ -583,9 +788,15 @@
                     </p>
                 `;
 
-                debloquerPersonne(courant.index);
 
-                ajouterPointAvecCodePostal(courant);
+                debloquerPersonne(
+                    courant.index
+                );
+
+
+                ajouterPointAvecCodePostal(
+                    courant
+                );
 
             } else {
 
@@ -595,6 +806,7 @@
                         ❌ Mauvaise réponse
                     </p>
                 `;
+
             }
 
         }
@@ -608,22 +820,31 @@
 
         function debloquerPersonne(index) {
 
-            const cartePersonne = document.getElementById(
-                "personne-" + index
-            );
+            const cartePersonne =
+                document.getElementById(
+                    "personne-" + index
+                );
 
-            const cadenas = document.getElementById(
-                "cadenas-" + index
-            );
+
+            const cadenas =
+                document.getElementById(
+                    "cadenas-" + index
+                );
+
 
             if (cartePersonne) {
 
-                cartePersonne.classList.add("debloquee");
+                cartePersonne.classList.add(
+                    "debloquee"
+                );
+
             }
+
 
             if (cadenas) {
 
                 cadenas.textContent = "🔓";
+
             }
 
         }
@@ -637,9 +858,11 @@
 
         function initialiserCarte() {
 
-            const messageCarte = document.getElementById(
-                "message-carte"
-            );
+            const messageCarte =
+                document.getElementById(
+                    "message-carte"
+                );
+
 
             try {
 
@@ -651,51 +874,77 @@
                         "⚠️ La carte est bloquée par le navigateur, mais les énigmes et les vidéos fonctionnent.";
 
                     return;
+
                 }
 
+
                 map = L.map("map").setView(
+
                     [46.603354, 1.888334],
+
                     6
+
                 );
 
+
                 L.tileLayer(
+
                     "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+
                     {
+
                         minZoom: 3,
 
                         maxZoom: 19,
 
                         attribution:
                             '&copy; OpenStreetMap'
+
                     }
+
                 ).addTo(map);
 
+
                 carteDisponible = true;
+
 
                 messageCarte.textContent =
                     "La carte est prête. Débloque un souvenir pour faire apparaître un point.";
 
+
                 setTimeout(
+
                     function() {
 
                         if (map) {
+
                             map.invalidateSize();
+
                         }
+
                     },
+
                     300
+
                 );
 
             } catch (erreur) {
 
                 console.error(
+
                     "Erreur lors du chargement de la carte :",
+
                     erreur
+
                 );
+
 
                 carteDisponible = false;
 
+
                 messageCarte.textContent =
                     "⚠️ La carte n'a pas pu être chargée, mais les vidéos restent disponibles.";
+
             }
 
         }
@@ -707,11 +956,19 @@
         ==================================================
         */
 
-        async function ajouterPointAvecCodePostal(personne) {
+        async function ajouterPointAvecCodePostal(
+            personne
+        ) {
 
-            const etatCarte = document.getElementById(
-                "etat-carte"
-            );
+            const etatCarte =
+                document.getElementById(
+                    "etat-carte"
+                );
+
+
+            /*
+            Vérification de la carte.
+            */
 
             if (!carteDisponible || !map) {
 
@@ -719,44 +976,22 @@
 
                     etatCarte.textContent =
                         "⚠️ La vidéo est débloquée, mais la carte n'est pas disponible.";
+
                 }
 
                 return;
+
             }
 
 
             /*
-            Si le marqueur existe déjà,
-            aucune copie n'est créée.
+            Récupération du code postal.
             */
 
-            if (marqueurs[personne.prenom]) {
-
-                const marqueurExistant =
-                    marqueurs[personne.prenom];
-
-                map.setView(
-                    marqueurExistant.getLatLng(),
-                    11
-                );
-
-                marqueurExistant.openPopup();
-
-                if (etatCarte) {
-
-                    etatCarte.textContent =
-                        "📍 Ce souvenir est déjà présent sur la carte.";
-                }
-
-                faireDefilerVersCarte();
-
-                return;
-            }
-
-
-            const codePostal = String(
-                personne.codePostal
-            ).trim();
+            const codePostal =
+                String(
+                    personne.codePostal
+                ).trim();
 
 
             /*
@@ -772,11 +1007,154 @@
 
                     etatCarte.textContent =
                         "⚠️ La vidéo est débloquée, mais aucun code postal valide n'a été renseigné.";
+
                 }
 
                 return;
+
             }
 
+
+            /*
+            Vérification d'une personne déjà débloquée.
+            */
+
+            if (
+                souvenirsDebloques.has(
+                    personne.prenom
+                )
+            ) {
+
+                const lieuExistant =
+                    lieuxParCodePostal[
+                        codePostal
+                    ];
+
+
+                if (lieuExistant) {
+
+                    map.setView(
+
+                        [
+                            lieuExistant.latitude,
+                            lieuExistant.longitude
+                        ],
+
+                        11
+
+                    );
+
+
+                    lieuExistant.marqueur.openPopup();
+
+
+                    if (etatCarte) {
+
+                        etatCarte.textContent =
+                            "📍 Ce souvenir est déjà présent sur la carte.";
+
+                    }
+
+
+                    faireDefilerVersCarte();
+
+                }
+
+                return;
+
+            }
+
+
+            /*
+            ==================================================
+            LE CODE POSTAL EXISTE DÉJÀ
+            ==================================================
+
+            Le prénom est ajouté au point existant.
+
+            Le point grossit.
+
+            La liste visible est mise à jour.
+            */
+
+            if (
+                lieuxParCodePostal[
+                    codePostal
+                ]
+            ) {
+
+                const lieu =
+                    lieuxParCodePostal[
+                        codePostal
+                    ];
+
+
+                if (
+                    !lieu.personnes.includes(
+                        personne.prenom
+                    )
+                ) {
+
+                    lieu.personnes.push(
+                        personne.prenom
+                    );
+
+                }
+
+
+                souvenirsDebloques.add(
+                    personne.prenom
+                );
+
+
+                mettreAJourPointGroupe(
+                    codePostal
+                );
+
+
+                mettreAJourCompteur();
+
+
+                map.setView(
+
+                    [
+                        lieu.latitude,
+                        lieu.longitude
+                    ],
+
+                    11
+
+                );
+
+
+                lieu.marqueur.openPopup();
+
+
+                if (etatCarte) {
+
+                    etatCarte.textContent =
+                        "📍 " +
+                        personne.prenom +
+                        " a été ajouté au point de " +
+                        lieu.commune +
+                        ".";
+
+                }
+
+
+                faireDefilerVersCarte();
+
+
+                return;
+
+            }
+
+
+            /*
+            ==================================================
+            RECHERCHE D'UN NOUVEAU CODE POSTAL
+            ==================================================
+            */
 
             try {
 
@@ -786,30 +1164,46 @@
                         "📍 Recherche du code postal " +
                         codePostal +
                         "...";
+
                 }
 
 
                 const adresseAPI =
+
                     "https://geo.api.gouv.fr/communes" +
+
                     "?codePostal=" +
-                    encodeURIComponent(codePostal) +
+
+                    encodeURIComponent(
+                        codePostal
+                    ) +
+
                     "&fields=nom,centre,codesPostaux" +
+
                     "&format=json" +
+
                     "&geometry=centre";
 
 
-                const reponse = await fetch(adresseAPI);
+                const reponse =
+                    await fetch(
+                        adresseAPI
+                    );
 
 
                 if (!reponse.ok) {
 
                     throw new Error(
+
                         "Le service géographique n'a pas répondu correctement."
+
                     );
+
                 }
 
 
-                const communes = await reponse.json();
+                const communes =
+                    await reponse.json();
 
 
                 if (
@@ -818,192 +1212,11 @@
                 ) {
 
                     throw new Error(
+
                         "Aucune commune trouvée pour ce code postal."
+
                     );
+
                 }
 
 
-                const commune = communes[0];
-
-
-                if (
-                    !commune.centre ||
-                    !Array.isArray(commune.centre.coordinates)
-                ) {
-
-                    throw new Error(
-                        "Aucune coordonnée trouvée."
-                    );
-                }
-
-
-                /*
-                Les coordonnées sont reçues dans cet ordre :
-
-                longitude
-                latitude
-                */
-
-                const longitude =
-                    commune.centre.coordinates[0];
-
-                const latitude =
-                    commune.centre.coordinates[1];
-
-                const nomCommune =
-                    commune.nom;
-
-
-                const marqueur = L.marker(
-                    [latitude, longitude]
-                ).addTo(map);
-
-
-                marqueur.bindPopup(`
-
-                    <div
-                        style="
-                            text-align:center;
-                            color:#111827;
-                        "
-                    >
-
-                        <strong>
-                            🎬 ${personne.prenom}
-                        </strong>
-
-                        <br>
-
-                        ${nomCommune}
-
-                        <br>
-
-                        Code postal : ${codePostal}
-
-                    </div>
-                `);
-
-
-                marqueurs[personne.prenom] = marqueur;
-
-                souvenirsDebloques.add(personne.prenom);
-
-                mettreAJourCompteur();
-
-
-                map.setView(
-                    [latitude, longitude],
-                    11
-                );
-
-
-                setTimeout(
-                    function() {
-
-                        map.invalidateSize();
-
-                        marqueur.openPopup();
-                    },
-                    200
-                );
-
-
-                if (etatCarte) {
-
-                    etatCarte.textContent =
-                        "📍 Point ajouté sur la carte : " +
-                        nomCommune +
-                        ".";
-                }
-
-
-                faireDefilerVersCarte();
-
-            } catch (erreur) {
-
-                console.error(
-                    "Erreur de géolocalisation :",
-                    erreur
-                );
-
-                if (etatCarte) {
-
-                    etatCarte.textContent =
-                        "⚠️ La vidéo est débloquée, mais le code postal n'a pas pu être placé sur la carte.";
-                }
-            }
-
-        }
-
-
-        /*
-        ==================================================
-        DÉFILEMENT VERS LA CARTE
-        ==================================================
-        */
-
-        function faireDefilerVersCarte() {
-
-            setTimeout(
-                function() {
-
-                    document
-                        .getElementById("section-carte")
-                        .scrollIntoView({
-                            behavior: "smooth",
-                            block: "start"
-                        });
-                },
-                500
-            );
-
-        }
-
-
-        /*
-        ==================================================
-        COMPTEUR
-        ==================================================
-        */
-
-        function mettreAJourCompteur() {
-
-            const nombre = souvenirsDebloques.size;
-
-            let texte;
-
-            if (nombre === 0) {
-
-                texte = "0 souvenir débloqué";
-
-            } else if (nombre === 1) {
-
-                texte = "1 souvenir débloqué";
-
-            } else {
-
-                texte =
-                    nombre +
-                    " souvenirs débloqués";
-            }
-
-            document.getElementById(
-                "compteur"
-            ).textContent = texte;
-
-        }
-
-
-        /*
-        ==================================================
-        DÉMARRAGE DE LA CARTE
-        ==================================================
-        */
-
-        initialiserCarte();
-
-    </script>
-
-</body>
-
-</html>
