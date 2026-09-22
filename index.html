@@ -81,3 +81,1252 @@
         ÉNIGME ET RÉPONSE
         ==================================================
         */
+
+        #zone {
+            margin: 40px auto 0;
+            max-width: 1000px;
+        }
+
+        input {
+            padding: 12px;
+            width: 300px;
+            max-width: 90%;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        /*
+        ==================================================
+        VIDÉO
+        ==================================================
+        */
+
+        video {
+            display: block;
+            margin: 20px auto 0;
+            width: 100%;
+            max-width: 900px;
+            max-height: 650px;
+            background: black;
+            border-radius: 15px;
+        }
+
+        /*
+        ==================================================
+        MESSAGES
+        ==================================================
+        */
+
+        .reussi {
+            color: #22c55e;
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .erreur {
+            color: #ef4444;
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .information {
+            color: #facc15;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /*
+        ==================================================
+        CARTE
+        ==================================================
+        */
+
+        #section-carte {
+            max-width: 1100px;
+            margin: 60px auto 20px;
+        }
+
+        #section-carte > p {
+            color: #cbd5e1;
+        }
+
+        #map {
+            width: 100%;
+            height: 550px;
+            margin-top: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid #334155;
+            box-sizing: border-box;
+            background: #1e293b;
+        }
+
+        #message-carte {
+            margin-top: 15px;
+            color: #facc15;
+            font-weight: bold;
+        }
+
+        #compteur {
+            margin-top: 15px;
+            color: #94a3b8;
+            font-weight: bold;
+        }
+
+        /*
+        ==================================================
+        LISTE VISIBLE DES NOMS SUR LA CARTE
+        ==================================================
+        */
+
+        .liste-souvenirs {
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            border: 2px solid #22c55e;
+            border-radius: 10px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.5;
+            white-space: nowrap;
+        }
+
+        .liste-souvenirs::before {
+            display: none;
+        }
+
+        .liste-souvenirs .titre-lieu {
+            display: block;
+            color: #facc15;
+            text-align: left;
+            margin-bottom: 3px;
+        }
+
+        .liste-souvenirs .nombre-souvenirs {
+            display: block;
+            color: #94a3b8;
+            font-size: 12px;
+            text-align: left;
+            margin-bottom: 4px;
+        }
+
+        .liste-souvenirs .nom-personne {
+            display: block;
+            text-align: left;
+        }
+
+        /*
+        ==================================================
+        VERSION TÉLÉPHONE
+        ==================================================
+        */
+
+        @media screen and (max-width: 600px) {
+
+            body {
+                padding: 20px 10px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            #people {
+                gap: 12px;
+            }
+
+            .card {
+                width: 90%;
+            }
+
+            #map {
+                height: 420px;
+            }
+
+            .liste-souvenirs {
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>🎬 Débloque ton souvenir</h1>
+
+    <!-- Les boutons des personnes apparaissent ici -->
+    <div id="people"></div>
+
+    <!-- L’énigme et la vidéo apparaissent ici -->
+    <div id="zone"></div>
+
+    <!-- Carte des souvenirs -->
+    <div id="section-carte">
+
+        <h2>🗺️ La carte des souvenirs</h2>
+
+        <p>
+            Chaque souvenir débloqué fait apparaître un point sur la carte.
+            Les souvenirs ayant le même code postal sont regroupés.
+        </p>
+
+        <div id="map"></div>
+
+        <div id="message-carte">
+            Chargement de la carte...
+        </div>
+
+        <div id="compteur">
+            0 souvenir débloqué
+        </div>
+
+    </div>
+
+    <!--
+    JAVASCRIPT LEAFLET
+
+    ATTENTION :
+    il faut bien conserver leaflet.js ci-dessous.
+    -->
+
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+
+        /*
+        ==================================================
+        DONNÉES À PERSONNALISER
+        ==================================================
+
+        Pour chaque personne, tu peux modifier :
+
+        - enigme
+        - reponses
+        - video
+        - codePostal
+
+        Si plusieurs personnes ont exactement le même
+        code postal, elles seront regroupées sur un seul point.
+        */
+
+        const data = [
+
+            {
+                prenom: "Ugo",
+
+                enigme:
+                    "Vomi régulier sur une route particulière lors de vos épopées en voiture.",
+
+                reponses: [
+                    "banquette arrière",
+                    "banquette arriere",
+                    "route de jouques"
+                ],
+
+                video: "ugo.mp4",
+
+                codePostal: "00000"
+            },
+
+            {
+                prenom: "Lalou",
+
+                enigme: "A REMPLIR",
+
+                reponses: [
+                    "REPONSE1",
+                    "REPONSE2"
+                ],
+
+                video: "lalou.mp4",
+
+                codePostal: "00000"
+            },
+
+            {
+                prenom: "Granny",
+
+                enigme: "A REMPLIR",
+
+                reponses: [
+                    "REPONSE1",
+                    "REPONSE2"
+                ],
+
+                video: "granny.mp4",
+
+                codePostal: "00000"
+            },
+
+            {
+                prenom: "Clotilde et Manu",
+
+                enigme: "A REMPLIR",
+
+                reponses: [
+                    "REPONSE1",
+                    "REPONSE2"
+                ],
+
+                video: "clotildeetmanu.mp4",
+
+                codePostal: "00000"
+            },
+
+            {
+                prenom: "Granny et Papou",
+
+                enigme: "A REMPLIR",
+
+                reponses: [
+                    "REPONSE1",
+                    "REPONSE2"
+                ],
+
+                video: "granny et papou.mp4",
+
+                codePostal: "00000"
+            },
+
+            {
+                prenom: "Mamounette",
+
+                enigme: "A REMPLIR",
+
+                reponses: [
+                    "REPONSE1",
+                    "REPONSE2"
+                ],
+
+                video: "mamounette.mp4",
+
+                codePostal: "00000"
+            },
+
+            {
+                prenom: "Joseph Noia",
+
+                enigme: "A REMPLIR",
+
+                reponses: [
+                    "REPONSE1",
+                    "REPONSE2"
+                ],
+
+                video: "josephnoia.mp4",
+
+                codePostal: "00000"
+            }
+
+        ];
+
+        /*
+        ==================================================
+        VARIABLES
+        ==================================================
+        */
+
+        let courant = null;
+
+        let map = null;
+
+        let carteDisponible = false;
+
+        /*
+        Un seul lieu est créé pour chaque code postal.
+        */
+
+        const lieuxParCodePostal = {};
+
+        /*
+        Cette liste empêche une personne d’être ajoutée
+        plusieurs fois.
+        */
+
+        const souvenirsDebloques = new Set();
+
+        const people = document.getElementById("people");
+
+        /*
+        ==================================================
+        AFFICHAGE DES NOMS
+        ==================================================
+
+        Les noms sont créés immédiatement, avant même
+        l’initialisation de la carte.
+        */
+
+        data.forEach(function(personne, index) {
+
+            const cartePersonne =
+                document.createElement("div");
+
+            cartePersonne.className = "card";
+
+            cartePersonne.id =
+                "personne-" + index;
+
+            cartePersonne.innerHTML = `
+                <span id="cadenas-${index}">🔒</span>
+                <span>${personne.prenom}</span>
+            `;
+
+            cartePersonne.addEventListener(
+                "click",
+                function() {
+                    ouvrir(index);
+                }
+            );
+
+            people.appendChild(cartePersonne);
+
+        });
+
+        /*
+        ==================================================
+        OUVERTURE DE L’ÉNIGME
+        ==================================================
+        */
+
+        function ouvrir(index) {
+
+            courant = data[index];
+
+            courant.index = index;
+
+            document.getElementById("zone").innerHTML = `
+
+                <h2>${courant.prenom}</h2>
+
+                <p>${courant.enigme}</p>
+
+                <input
+                    id="rep"
+                    type="text"
+                    placeholder="Votre réponse"
+                    autocomplete="off"
+                >
+
+                <br>
+
+                <button
+                    type="button"
+                    onclick="verifier()"
+                >
+                    Valider
+                </button>
+
+                <div id="resultat"></div>
+            `;
+
+            const champReponse =
+                document.getElementById("rep");
+
+            champReponse.focus();
+
+            champReponse.addEventListener(
+                "keydown",
+                function(event) {
+
+                    if (event.key === "Enter") {
+                        verifier();
+                    }
+                }
+            );
+
+            document
+                .getElementById("zone")
+                .scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+        }
+
+        /*
+        ==================================================
+        NORMALISATION DES RÉPONSES
+        ==================================================
+
+        Cela permet d’ignorer :
+
+        - les majuscules ;
+        - les accents ;
+        - les espaces en trop.
+        */
+
+        function normaliserTexte(texte) {
+
+            return String(texte)
+                .trim()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, " ");
+
+        }
+
+        /*
+        ==================================================
+        VÉRIFICATION DE LA RÉPONSE
+        ==================================================
+        */
+
+        function verifier() {
+
+            if (!courant) {
+                return;
+            }
+
+            const champReponse =
+                document.getElementById("rep");
+
+            const resultat =
+                document.getElementById("resultat");
+
+            const reponseUtilisateur =
+                normaliserTexte(
+                    champReponse.value
+                );
+
+            const correcte =
+                courant.reponses.some(
+                    function(reponseAcceptee) {
+
+                        return normaliserTexte(
+                            reponseAcceptee
+                        ) === reponseUtilisateur;
+                    }
+                );
+
+            if (correcte) {
+
+                const adresseVideo =
+                    encodeURI(courant.video);
+
+                resultat.innerHTML = `
+
+                    <p class="reussi">
+                        ✅ Bonne réponse !
+                    </p>
+
+                    <video
+                        controls
+                        playsinline
+                        preload="metadata"
+                    >
+
+                        <source
+                            src="${adresseVideo}"
+                            type="video/mp4"
+                        >
+
+                        Votre navigateur ne supporte pas cette vidéo.
+
+                    </video>
+
+                    <p
+                        id="etat-carte"
+                        class="information"
+                    >
+                        📍 Ajout du souvenir sur la carte...
+                    </p>
+                `;
+
+                debloquerPersonne(courant.index);
+
+                ajouterPointAvecCodePostal(courant);
+
+            } else {
+
+                resultat.innerHTML = `
+
+                    <p class="erreur">
+                        ❌ Mauvaise réponse
+                    </p>
+                `;
+            }
+
+        }
+
+        /*
+        ==================================================
+        DÉBLOCAGE VISUEL
+        ==================================================
+        */
+
+        function debloquerPersonne(index) {
+
+            const cartePersonne =
+                document.getElementById(
+                    "personne-" + index
+                );
+
+            const cadenas =
+                document.getElementById(
+                    "cadenas-" + index
+                );
+
+            if (cartePersonne) {
+
+                cartePersonne.classList.add(
+                    "debloquee"
+                );
+            }
+
+            if (cadenas) {
+
+                cadenas.textContent = "🔓";
+            }
+
+        }
+
+        /*
+        ==================================================
+        INITIALISATION DE LA CARTE
+        ==================================================
+        */
+
+        function initialiserCarte() {
+
+            const messageCarte =
+                document.getElementById(
+                    "message-carte"
+                );
+
+            try {
+
+                if (typeof L === "undefined") {
+
+                    carteDisponible = false;
+
+                    messageCarte.textContent =
+                        "⚠️ La carte n’a pas pu être chargée, mais les énigmes et les vidéos restent disponibles.";
+
+                    return;
+                }
+
+                map = L.map("map").setView(
+                    [46.603354, 1.888334],
+                    6
+                );
+
+                L.tileLayer(
+                    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    {
+                        minZoom: 3,
+                        maxZoom: 19,
+                        attribution: "&copy; OpenStreetMap"
+                    }
+                ).addTo(map);
+
+                carteDisponible = true;
+
+                messageCarte.textContent =
+                    "La carte est prête. Débloque un souvenir pour faire apparaître un point.";
+
+                setTimeout(
+                    function() {
+
+                        map.invalidateSize();
+                    },
+                    300
+                );
+
+            } catch (erreur) {
+
+                console.error(
+                    "Erreur de chargement de la carte :",
+                    erreur
+                );
+
+                carteDisponible = false;
+
+                messageCarte.textContent =
+                    "⚠️ La carte n’a pas pu être chargée, mais les vidéos restent disponibles.";
+            }
+
+        }
+
+        /*
+        ==================================================
+        AJOUT D’UNE PERSONNE SUR LA CARTE
+        ==================================================
+        */
+
+        async function ajouterPointAvecCodePostal(personne) {
+
+            const etatCarte =
+                document.getElementById(
+                    "etat-carte"
+                );
+
+            if (!carteDisponible || !map) {
+
+                if (etatCarte) {
+
+                    etatCarte.textContent =
+                        "⚠️ La vidéo est débloquée, mais la carte n’est pas disponible.";
+                }
+
+                return;
+            }
+
+            const codePostal =
+                String(personne.codePostal).trim();
+
+            if (
+                !/^\d{5}$/.test(codePostal) ||
+                codePostal === "00000"
+            ) {
+
+                if (etatCarte) {
+
+                    etatCarte.textContent =
+                        "⚠️ La vidéo est débloquée, mais aucun code postal valide n’a été renseigné.";
+                }
+
+                return;
+            }
+
+            /*
+            La personne a déjà été ajoutée.
+            */
+
+            if (
+                souvenirsDebloques.has(
+                    personne.prenom
+                )
+            ) {
+
+                const lieuExistant =
+                    lieuxParCodePostal[codePostal];
+
+                if (lieuExistant) {
+
+                    map.setView(
+                        [
+                            lieuExistant.latitude,
+                            lieuExistant.longitude
+                        ],
+                        11
+                    );
+
+                    lieuExistant.marqueur.openPopup();
+
+                    if (etatCarte) {
+
+                        etatCarte.textContent =
+                            "📍 Ce souvenir est déjà présent sur la carte.";
+                    }
+
+                    faireDefilerVersCarte();
+                }
+
+                return;
+            }
+
+            /*
+            Le code postal existe déjà.
+
+            La nouvelle personne est ajoutée au point existant.
+            */
+
+            if (lieuxParCodePostal[codePostal]) {
+
+                const lieu =
+                    lieuxParCodePostal[codePostal];
+
+                if (
+                    !lieu.personnes.includes(
+                        personne.prenom
+                    )
+                ) {
+
+                    lieu.personnes.push(
+                        personne.prenom
+                    );
+                }
+
+                souvenirsDebloques.add(
+                    personne.prenom
+                );
+
+                mettreAJourPointGroupe(
+                    codePostal
+                );
+
+                mettreAJourCompteur();
+
+                map.setView(
+                    [
+                        lieu.latitude,
+                        lieu.longitude
+                    ],
+                    11
+                );
+
+                lieu.marqueur.openPopup();
+
+                if (etatCarte) {
+
+                    etatCarte.textContent =
+                        "📍 " +
+                        personne.prenom +
+                        " a été ajouté au point de " +
+                        lieu.commune +
+                        ".";
+                }
+
+                faireDefilerVersCarte();
+
+                return;
+            }
+
+            /*
+            Nouveau code postal.
+
+            Recherche des coordonnées de la commune.
+            */
+
+            try {
+
+                if (etatCarte) {
+
+                    etatCarte.textContent =
+                        "📍 Recherche du code postal " +
+                        codePostal +
+                        "...";
+                }
+
+                const adresseAPI =
+                    "https://geo.api.gouv.fr/communes" +
+                    "?codePostal=" +
+                    encodeURIComponent(codePostal) +
+                    "&fields=nom,centre,codesPostaux" +
+                    "&format=json" +
+                    "&geometry=centre";
+
+                const reponse =
+                    await fetch(adresseAPI);
+
+                if (!reponse.ok) {
+
+                    throw new Error(
+                        "Le service géographique n’a pas répondu correctement."
+                    );
+                }
+
+                const communes =
+                    await reponse.json();
+
+                if (
+                    !Array.isArray(communes) ||
+                    communes.length === 0
+                ) {
+
+                    throw new Error(
+                        "Aucune commune trouvée."
+                    );
+                }
+
+                const commune =
+                    communes[0];
+
+                if (
+                    !commune.centre ||
+                    !Array.isArray(
+                        commune.centre.coordinates
+                    )
+                ) {
+
+                    throw new Error(
+                        "Coordonnées indisponibles."
+                    );
+                }
+
+                /*
+                L’ordre reçu est :
+
+                longitude, latitude
+                */
+
+                const longitude =
+                    commune.centre.coordinates[0];
+
+                const latitude =
+                    commune.centre.coordinates[1];
+
+                const nomCommune =
+                    commune.nom;
+
+                /*
+                Un cercle est utilisé afin que le point
+                puisse grossir.
+                */
+
+                const marqueur =
+                    L.circleMarker(
+                        [latitude, longitude],
+                        {
+                            radius: 10,
+                            color: "#ffffff",
+                            weight: 3,
+                            fillColor: "#ef4444",
+                            fillOpacity: 0.9
+                        }
+                    ).addTo(map);
+
+                lieuxParCodePostal[codePostal] = {
+
+                    marqueur: marqueur,
+
+                    personnes: [
+                        personne.prenom
+                    ],
+
+                    commune: nomCommune,
+
+                    latitude: latitude,
+
+                    longitude: longitude
+                };
+
+                souvenirsDebloques.add(
+                    personne.prenom
+                );
+
+                mettreAJourPointGroupe(
+                    codePostal
+                );
+
+                mettreAJourCompteur();
+
+                map.setView(
+                    [latitude, longitude],
+                    11
+                );
+
+                setTimeout(
+                    function() {
+
+                        map.invalidateSize();
+
+                        marqueur.openPopup();
+                    },
+                    200
+                );
+
+                if (etatCarte) {
+
+                    etatCarte.textContent =
+                        "📍 Point ajouté sur la carte : " +
+                        nomCommune +
+                        ".";
+                }
+
+                faireDefilerVersCarte();
+
+            } catch (erreur) {
+
+                console.error(
+                    "Erreur de géolocalisation :",
+                    erreur
+                );
+
+                if (etatCarte) {
+
+                    etatCarte.textContent =
+                        "⚠️ La vidéo est débloquée, mais le code postal n’a pas pu être placé sur la carte.";
+                }
+            }
+
+        }
+
+        /*
+        ==================================================
+        AGRANDISSEMENT ET LISTE DES NOMS
+        ==================================================
+        */
+
+        function mettreAJourPointGroupe(codePostal) {
+
+            const lieu =
+                lieuxParCodePostal[codePostal];
+
+            if (!lieu) {
+                return;
+            }
+
+            const nombrePersonnes =
+                lieu.personnes.length;
+
+            /*
+            Le point grossit de 5 pixels
+            par personne supplémentaire.
+            */
+
+            const nouveauRayon =
+                Math.min(
+                    10 +
+                    ((nombrePersonnes - 1) * 5),
+                    35
+                );
+
+            /*
+            Couleur selon le nombre de personnes.
+            */
+
+            let couleurPoint = "#ef4444";
+
+            if (nombrePersonnes === 2) {
+
+                couleurPoint = "#f97316";
+
+            } else if (nombrePersonnes === 3) {
+
+                couleurPoint = "#eab308";
+
+            } else if (nombrePersonnes >= 4) {
+
+                couleurPoint = "#22c55e";
+            }
+
+            lieu.marqueur.setRadius(
+                nouveauRayon
+            );
+
+            lieu.marqueur.setStyle({
+                fillColor: couleurPoint,
+                color: "#ffffff",
+                weight: 3,
+                fillOpacity: 0.9
+            });
+
+            /*
+            Liste destinée à la fenêtre ouverte au clic.
+            */
+
+            const listeNomsPopup =
+                lieu.personnes
+                    .map(function(nom) {
+
+                        return `
+                            <li>🎬 ${nom}</li>
+                        `;
+                    })
+                    .join("");
+
+            /*
+            Liste destinée à l’étiquette permanente.
+            */
+
+            const listeNomsVisible =
+                lieu.personnes
+                    .map(function(nom) {
+
+                        return `
+                            <span class="nom-personne">
+                                🎬 ${nom}
+                            </span>
+                        `;
+                    })
+                    .join("");
+
+            /*
+            Fenêtre au clic.
+            */
+
+            lieu.marqueur.bindPopup(`
+
+                <div
+                    style="
+                        text-align:left;
+                        color:#111827;
+                        min-width:190px;
+                    "
+                >
+
+                    <div
+                        style="
+                            text-align:center;
+                            font-size:17px;
+                            font-weight:bold;
+                            margin-bottom:8px;
+                        "
+                    >
+                        📍 ${lieu.commune}
+                    </div>
+
+                    <div
+                        style="
+                            text-align:center;
+                            margin-bottom:8px;
+                        "
+                    >
+                        Code postal : ${codePostal}
+                    </div>
+
+                    <strong>
+                        Souvenirs débloqués :
+                    </strong>
+
+                    <ul
+                        style="
+                            margin:8px 0 0;
+                            padding-left:20px;
+                        "
+                    >
+                        ${listeNomsPopup}
+                    </ul>
+
+                </div>
+            `);
+
+            /*
+            Suppression de l’ancienne liste avant
+            de créer la nouvelle.
+            */
+
+            lieu.marqueur.unbindTooltip();
+
+            /*
+            Liste permanente à droite du point.
+            */
+
+            lieu.marqueur.bindTooltip(
+                `
+
+                <div>
+
+                    <span class="titre-lieu">
+                        📍 ${lieu.commune}
+                    </span>
+
+                    <span class="nombre-souvenirs">
+                        ${nombrePersonnes}
+                        ${
+                            nombrePersonnes > 1
+                                ? "souvenirs"
+                                : "souvenir"
+                        }
+                    </span>
+
+                    ${listeNomsVisible}
+
+                </div>
+                `,
+                {
+                    permanent: true,
+                    direction: "right",
+                    offset: [
+                        nouveauRayon + 5,
+                        0
+                    ],
+                    className: "liste-souvenirs",
+                    opacity: 1
+                }
+            );
+
+            lieu.marqueur.openTooltip();
+
+        }
+
+        /*
+        ==================================================
+        DÉFILEMENT VERS LA CARTE
+        ==================================================
+        */
+
+        function faireDefilerVersCarte() {
+
+            setTimeout(
+                function() {
+
+                    document
+                        .getElementById(
+                            "section-carte"
+                        )
+                        .scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+                },
+                500
+            );
+
+        }
+
+        /*
+        ==================================================
+        COMPTEUR
+        ==================================================
+        */
+
+        function mettreAJourCompteur() {
+
+            const nombre =
+                souvenirsDebloques.size;
+
+            let texte;
+
+            if (nombre === 0) {
+
+                texte =
+                    "0 souvenir débloqué";
+
+            } else if (nombre === 1) {
+
+                texte =
+                    "1 souvenir débloqué";
+
+            } else {
+
+                texte =
+                    nombre +
+                    " souvenirs débloqués";
+            }
+
+            document
+                .getElementById("compteur")
+                .textContent = texte;
+
+        }
+
+        /*
+        ==================================================
+        DÉMARRAGE
+        ==================================================
+        */
+
+        initialiserCarte();
+
+    </script>
+
+</body>
+
+</html>
