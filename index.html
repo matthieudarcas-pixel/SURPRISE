@@ -3,723 +3,110 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>Débloque ton souvenir</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<!-- Feuille de style de la carte Leaflet -->
-<link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
- ign: center;
-    padding: 40px;
-    margin: 0;
-}
+    <title>Débloque ton souvenir</title>
 
-h1 {
-    margin-bottom: 40px;
-}
 
-.card {
-    display: inline-block;
-    width: 250px;
-    background: #1e293b;
-    padding: 20px;
-    margin: 10px;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: 0.3s;
-    box-sizing: border-box;
-}
+    <!--
+    ==================================================
+    LEAFLET POUR LA CARTE
+    ==================================================
 
-.card:hover {
-    transform: scale(1.05);
-    background: #334155;
-}
+    Les attributs integrity et crossorigin ont été retirés
+    afin d'éviter l'erreur affichée dans ta console.
+    -->
 
-.card.debloquee {
-    background: #166534;
-}
+    https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css
 
-#zone {
-    margin-top: 40px;
-}
 
-input {
-    padding: 12px;
-    width: 300px;
-    max-width: 90%;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-}
+    <style>
 
-button {
-    padding: 12px 20px;
-    margin-top: 10px;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    background: #2563eb;
-    color: white;
-    font-weight: bold;
-    font-size: 15px;
-}
-
-button:hover {
-    background: #1d4ed8;
-}
-
-video {
-    display: block;
-    margin: 20px auto 0;
-    width: 100%;
-    max-width: 900px;
-    border-radius: 12px;
-    background: black;
-}
-
-.reussi {
-    color: #22c55e;
-    font-weight: bold;
-    margin-top: 20px;
-}
-
-.erreur {
-    color: #ef4444;
-    font-weight: bold;
-    margin-top: 20px;
-}
-
-.information {
-    color: #facc15;
-    font-weight: bold;
-    margin-top: 15px;
-}
-
-#section-carte {
-    max-width: 1000px;
-    margin: 60px auto 20px;
-}
-
-#section-carte h2 {
-    margin-bottom: 10px;
-}
-
-#section-carte p {
-    color: #cbd5e1;
-}
-
-#map {
-    width: 100%;
-    height: 550px;
-    margin-top: 20px;
-    border-radius: 15px;
-    overflow: hidden;
-    border: 3px solid #334155;
-    box-sizing: border-box;
-}
-
-.compteur {
-    margin-top: 15px;
-    color: #94a3b8;
-    font-weight: bold;
-}
-
-@media screen and (max-width: 600px) {
-
-    body {
-        padding: 20px 10px;
-    }
-
-    .card {
-        width: 90%;
-    }
-
-    #map {
-        height: 420px;
-    }
-}
-
-</style>
-
-</head>
-
-<body>
-
-<h1>🎬 Débloque ton souvenir</h1>
-
-<div id="people"></div>
-
-<div id="zone"></div>
-
-<div id="section-carte">
-
-    <h2>🗺️ La carte des souvenirs</h2>
-
-    <p>
-        Chaque souvenir débloqué fait apparaître un nouveau point sur la carte.
-    </p>
-
-    <div id="map"></div>
-
-    <div id="compteur" class="compteur">
-        0 souvenir débloqué
-    </div>
-
-</div>
-
-<!-- Script de la carte Leaflet -->
-<script
-    src="https://unpkg.com/leaflet@1.9.</script>
-
-<script>
-
-/*
-==================================================
-DONNÉES À PERSONNALISER
-==================================================
-
-Pour chaque personne, complète :
-
-1. enigme
-2. reponses
-3. video
-4. codePostal
-
-Il vaut mieux écrire le code postal entre guillemets,
-notamment pour les codes commençant par zéro.
-*/
-
-const data = [
-
-    {
-        prenom: "Ugo",
-
-        enigme:
-            "Vomi régulier sur une route particulière lors de vos épopées en voiture.",
-
-        reponses: [
-            "banquette arrière",
-            "banquette arriere",
-            "route de jouques"
-        ],
-
-        video: "ugo.mp4",
-
-        codePostal: "83560"
-    },
-
-    {
-        prenom: "Lalou",
-
-        enigme: "A REMPLIR",
-
-        reponses: [
-            "REPONSE1",
-            "REPONSE2"
-        ],
-
-        video: "lalou.mp4",
-
-        codePostal: "00000"
-    },
-
-    {
-        prenom: "Granny",
-
-        enigme: "A REMPLIR",
-
-        reponses: [
-            "REPONSE1",
-            "REPONSE2"
-        ],
-
-        video: "granny.mp4",
-
-        codePostal: "00000"
-    },
-
-    {
-        prenom: "Clotilde et Manu",
-
-        enigme: "A REMPLIR",
-
-        reponses: [
-            "REPONSE1",
-            "REPONSE2"
-        ],
-
-        video: "clotildeetmanu.mp4",
-
-        codePostal: "00000"
-    },
-
-    {
-        prenom: "Granny et Papou",
-
-        enigme: "A REMPLIR",
-
-        reponses: [
-            "REPONSE1",
-            "REPONSE2"
-        ],
-
-        video: "granny et papou.mp4",
-
-        codePostal: "00000"
-    },
-
-    {
-        prenom: "Mamounette",
-
-        enigme: "A REMPLIR",
-
-        reponses: [
-            "REPONSE1",
-            "REPONSE2"
-        ],
-
-        video: "mamounette.mp4",
-
-        codePostal: "00000"
-    },
-
-    {
-        prenom: "Joseph Noia",
-
-        enigme: "A REMPLIR",
-
-        reponses: [
-            "REPONSE1",
-            "REPONSE2"
-        ],
-
-        video: "josephnoia.mp4",
-
-        codePostal: "00000"
-    }
-
-];
-
-
-/*
-==================================================
-VARIABLES GÉNÉRALES
-==================================================
-*/
-
-let courant = null;
-
-const people = document.getElementById("people");
-
-const souvenirsDebloques = new Set();
-
-const marqueurs = {};
-
-
-/*
-==================================================
-CRÉATION DE LA CARTE
-==================================================
-*/
-
-const map = L.map("map").setView(
-    [46.603354, 1.888334],
-    6
-);
-
-L.tileLayer(
-    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-        maxZoom: 19,
-
-        attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }
-).addTo(map);
-
-
-/*
-==================================================
-CRÉATION DES CARTES DES PERSONNES
-==================================================
-*/
-
-data.forEach((personne, index) => {
-
-    const cartePersonne = document.createElement("div");
-
-    cartePersonne.className = "card";
-
-    cartePersonne.id = `personne-${index}`;
-
-    cartePersonne.innerHTML = `
-        <span id="cadenas-${index}">🔒</span>
-        ${personne.prenom}
-    `;
-
-    cartePersonne.addEventListener("click", function() {
-        ouvrir(index);
-    });
-
-    people.appendChild(cartePersonne);
-
-});
-
-
-/*
-==================================================
-OUVERTURE DE L'ÉNIGME
-==================================================
-*/
-
-function ouvrir(index) {
-
-    courant = data[index];
-
-    courant.index = index;
-
-    document.getElementById("zone").innerHTML = `
-
-        <h2>${courant.prenom}</h2>
-
-        <p>${courant.enigme}</p>
-
-        <input
-            id="rep"
-            type="text"
-            placeholder="Votre réponse"
-            autocomplete="off"
-        >
-
-        <br>
-
-        <button type="button" onclick="verifier()">
-            Valider
-        </button>
-
-        <div id="resultat"></div>
-    `;
-
-    const champReponse = document.getElementById("rep");
-
-    champReponse.focus();
-
-    champReponse.addEventListener("keydown", function(event) {
-
-        if (event.key === "Enter") {
-            verifier();
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 40px;
+            margin: 0;
         }
 
-    });
-
-}
-
-
-/*
-==================================================
-NORMALISATION DES RÉPONSES
-==================================================
-
-Cette fonction permet d'accepter plus facilement :
-
-banquette arrière
-banquette arriere
-BANQUETTE ARRIERE
-
-Les accents, majuscules et espaces supplémentaires
-ne bloquent donc pas la réponse.
-*/
-
-function normaliserTexte(texte) {
-
-    return texte
-        .trim()
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, " ");
-
-}
-
-
-/*
-==================================================
-VÉRIFICATION DE LA RÉPONSE
-==================================================
-*/
-
-function verifier() {
-
-    const champReponse = document.getElementById("rep");
-
-    const reponseUtilisateur = normaliserTexte(
-        champReponse.value
-    );
-
-    const correcte = courant.reponses.some(function(reponseAcceptee) {
-
-        return normaliserTexte(reponseAcceptee) === reponseUtilisateur;
-
-    });
-
-    if (correcte) {
-
-        document.getElementById("resultat").innerHTML = `
-
-            <p class="reussi">
-                ✅ Bonne réponse !
-            </p>
-
-            <video controls playsinline preload="metadata">
-
-                <source
-                    src="${encodeURI(courant.video)}"
-                    type="video/mp4"
-                >
-
-                Votre navigateur ne supporte pas la vidéo.
-
-            </video>
-
-            <p id="etat-carte" class="information">
-                📍 Recherche du code postal ${courant.codePostal}...
-            </p>
-        `;
-
-        debloquerPersonne(courant.index);
-
-        ajouterPointAvecCodePostal(courant);
-
-    } else {
-
-        document.getElementById("resultat").innerHTML = `
-
-            <p class="erreur">
-                ❌ Mauvaise réponse
-            </p>
-        `;
-
-    }
-
-}
-
-
-/*
-==================================================
-DÉBLOCAGE VISUEL DE LA PERSONNE
-==================================================
-*/
-
-function debloquerPersonne(index) {
-
-    const cartePersonne =
-        document.getElementById(`personne-${index}`);
-
-    const cadenas =
-        document.getElementById(`cadenas-${index}`);
-
-    cartePersonne.classList.add("debloquee");
-
-    cadenas.textContent = "🔓";
-
-}
-
-
-/*
-==================================================
-AJOUT DU POINT SUR LA CARTE
-==================================================
-*/
-
-async function ajouterPointAvecCodePostal(personne) {
-
-    const etatCarte = document.getElementById("etat-carte");
-
-    /*
-    Si le point de cette personne existe déjà,
-    le code ne crée pas un deuxième point.
-    */
-
-    if (marqueurs[personne.prenom]) {
-
-        const marqueurExistant =
-            marqueurs[personne.prenom];
-
-        map.setView(
-            marqueurExistant.getLatLng(),
-            11
-        );
-
-        marqueurExistant.openPopup();
-
-        if (etatCarte) {
-
-            etatCarte.textContent =
-                "📍 Ce souvenir est déjà présent sur la carte.";
-
+        h1 {
+            margin-bottom: 40px;
         }
 
-        return;
-    }
-
-    /*
-    Vérification simple du code postal.
-    */
-
-    if (
-        !personne.codePostal ||
-        personne.codePostal === "00000"
-    ) {
-
-        if (etatCarte) {
-
-            etatCarte.textContent =
-                "⚠️ Aucun code postal valide n'a été renseigné.";
-
+        h2 {
+            margin-top: 30px;
         }
 
-        return;
-    }
-
-    try {
-
-        const adresseAPI =
-            "https://geo.api.gouv.fr/communes" +
-            "?codePostal=" +
-            encodeURIComponent(personne.codePostal) +
-            "&fields=nom,centre,codesPostaux" +
-            "&format=json" +
-            "&geometry=centre";
-
-        const reponse = await fetch(adresseAPI);
-
-        if (!reponse.ok) {
-
-            throw new Error(
-                "Erreur lors de la recherche du code postal."
-            );
-
-        }
-
-        const communes = await reponse.json();
-
-        if (
-            !communes ||
-            communes.length === 0 ||
-            !communes[0].centre ||
-            !communes[0].centre.coordinates
-        ) {
-
-            throw new Error(
-                "Aucune commune trouvée pour ce code postal."
-            );
-
-        }
 
         /*
-        Les coordonnées sont renvoyées dans l'ordre :
-        longitude, latitude.
+        ==================================================
+        CARTES DES PERSONNES
+        ==================================================
         */
 
-        const longitude =
-            communes[0].centre.coordinates[0];
+        #people {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-        const latitude =
-            communes[0].centre.coordinates[1];
+        .card {
+            display: inline-block;
+            width: 250px;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-sizing: border-box;
+            border: 2px solid transparent;
+            font-size: 18px;
+            font-weight: bold;
+        }
 
-        const nomCommune =
-            communes[0].nom;
+        .card:hover {
+            transform: scale(1.05);
+            background: #334155;
+            border-color: #60a5fa;
+        }
+
+        .card.debloquee {
+            background: #166534;
+            border-color: #22c55e;
+        }
+
 
         /*
-        Création du point sur la carte.
+        ==================================================
+        ZONE DE L'ÉNIGME ET DE LA VIDÉO
+        ==================================================
         */
 
-        const marqueur = L.marker(
-            [latitude, longitude]
-        ).addTo(map);
-
-        marqueur.bindPopup(`
-
-            <div style="text-align:center;">
-
-                <strong>
-                    🎬 ${personne.prenom}
-                </strong>
-
-                <br>
-
-                ${nomCommune}
-
-                <br>
-
-                Code postal :
-                ${personne.codePostal}
-
-            </div>
-        `);
-
-        marqueurs[personne.prenom] = marqueur;
-
-        souvenirsDebloques.add(personne.prenom);
-
-        mettreAJourCompteur();
-
-        map.setView(
-            [latitude, longitude],
-            11
-        );
-
-        marqueur.openPopup();
-
-        if (etatCarte) {
-
-            etatCarte.textContent =
-                `📍 Point ajouté sur la carte : ${nomCommune}.`;
-
+        #zone {
+            margin: 40px auto 0;
+            max-width: 1000px;
         }
 
-    } catch (erreur) {
-
-        console.error(erreur);
-
-        if (etatCarte) {
-
-            etatCarte.textContent =
-                "⚠️ Impossible de placer ce code postal sur la carte.";
-
+        input {
+            padding: 12px;
+            width: 300px;
+            max-width: 90%;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
         }
 
-    }
-
-}
-
-
-/*
-==================================================
-MISE À JOUR DU COMPTEUR
-==================================================
-*/
-
-function mettreAJourCompteur() {
-
-    const nombre = souvenirsDebloques.size;
-
-    const texteSouvenir =
-        nombre > 1
-            ? "souvenirs débloqués"
-            : "souvenir débloqué";
-
-    document.getElementById("compteur").textContent =
-        `${nombre} ${texteSouvenir}`;
-
-}
-
-</script>
-
-</body>
-
-</html>
+        button {
+            padding: 12px 20px;
+    
