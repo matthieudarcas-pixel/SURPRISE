@@ -1,25 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Débloque ton souvenir</title>
-
-    <!-- STYLE DE LA CARTE LEAFLET -->
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
-    >
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 
     <style>
-
         body {
             font-family: Arial, sans-serif;
             background: #0f172a;
@@ -29,19 +16,8 @@
             margin: 0;
         }
 
-        h1 {
-            margin-bottom: 40px;
-        }
-
-        h2 {
-            margin-top: 30px;
-        }
-
-        /*
-        ==================================================
-        BOUTONS DES PERSONNES
-        ==================================================
-        */
+        h1 { margin-bottom: 40px; }
+        h2 { margin-top: 30px; }
 
         #people {
             display: flex;
@@ -76,15 +52,49 @@
             border-color: #22c55e;
         }
 
-        /*
-        ==================================================
-        ÉNIGME ET RÉPONSE
-        ==================================================
-        */
-
         #zone {
             margin: 40px auto 0;
             max-width: 1000px;
+        }
+
+        .bloc-question {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 28px;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.30);
+            box-sizing: border-box;
+        }
+
+        .bloc-question h2 {
+            margin: 0 0 18px;
+            color: #facc15;
+        }
+
+        .bloc-question .question {
+            margin: 0 auto 22px;
+            color: #f8fafc;
+            font-size: 19px;
+            line-height: 1.6;
+        }
+
+        .bloc-question .zone-reponse {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .bloc-question .zone-reponse button {
+            margin-top: 0;
+        }
+
+        #resultat:empty {
+            display: none;
         }
 
         input {
@@ -109,15 +119,7 @@
             font-weight: bold;
         }
 
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        /*
-        ==================================================
-        VIDÉO
-        ==================================================
-        */
+        button:hover { background: #1d4ed8; }
 
         video {
             display: block;
@@ -128,12 +130,6 @@
             background: black;
             border-radius: 15px;
         }
-
-        /*
-        ==================================================
-        MESSAGES
-        ==================================================
-        */
 
         .reussi {
             color: #22c55e;
@@ -155,20 +151,12 @@
             margin-top: 20px;
         }
 
-        /*
-        ==================================================
-        CARTE
-        ==================================================
-        */
-
         #section-carte {
             max-width: 1100px;
             margin: 60px auto 20px;
         }
 
-        #section-carte > p {
-            color: #cbd5e1;
-        }
+        #section-carte > p { color: #cbd5e1; }
 
         #map {
             width: 100%;
@@ -193,37 +181,42 @@
             font-weight: bold;
         }
 
-        /*
-        ==================================================
-        LISTE VISIBLE DES NOMS SUR LA CARTE
-        ==================================================
-        */
+        /* Conteneur Leaflet transparent des bulles */
+        .marqueur-liste-souvenirs {
+            background: transparent !important;
+            border: none !important;
+        }
 
-        .liste-souvenirs {
-            background: rgba(15, 23, 42, 0.95);
+        /* Bulle permanente contenant le lieu et les prénoms */
+        .bulle-souvenirs {
+            display: inline-block;
+            background: rgba(15, 23, 42, 0.96);
             color: white;
             border: 2px solid #22c55e;
             border-radius: 10px;
             padding: 8px 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.40);
             font-size: 14px;
             font-weight: bold;
             line-height: 1.5;
             white-space: nowrap;
+            box-sizing: border-box;
+            pointer-events: auto;
+            cursor: pointer;
         }
 
-        .liste-souvenirs::before {
-            display: none;
+        .bulle-souvenirs:hover {
+            border-color: #facc15;
         }
 
-        .liste-souvenirs .titre-lieu {
+        .bulle-souvenirs .titre-lieu {
             display: block;
             color: #facc15;
             text-align: left;
             margin-bottom: 3px;
         }
 
-        .liste-souvenirs .nombre-souvenirs {
+        .bulle-souvenirs .nombre-souvenirs {
             display: block;
             color: #94a3b8;
             font-size: 12px;
@@ -231,1353 +224,546 @@
             margin-bottom: 4px;
         }
 
-        .liste-souvenirs .nom-personne {
+        .bulle-souvenirs .nom-personne {
             display: block;
             text-align: left;
         }
 
-        /*
-        ==================================================
-        VERSION TÉLÉPHONE
-        ==================================================
-        */
-
         @media screen and (max-width: 600px) {
+            body { padding: 20px 10px; }
+            h1 { font-size: 28px; }
+            #people { gap: 12px; }
+            .card { width: 90%; }
 
-            body {
-                padding: 20px 10px;
+            .bloc-question {
+                padding: 20px 14px;
             }
 
-            h1 {
-                font-size: 28px;
+            .bloc-question .question {
+                font-size: 17px;
             }
 
-            #people {
-                gap: 12px;
+            .bloc-question .zone-reponse {
+                display: block;
             }
 
-            .card {
-                width: 90%;
+            .bloc-question .zone-reponse button {
+                margin-top: 10px;
             }
 
-            #map {
-                height: 420px;
-            }
+            #map { height: 420px; }
 
-            .liste-souvenirs {
+            .bulle-souvenirs {
+                max-width: 190px;
+                white-space: normal;
                 font-size: 12px;
                 padding: 6px 8px;
             }
         }
-
     </style>
-
 </head>
 
 <body>
-
     <h1>🎬 Débloque ton souvenir</h1>
-
-    <!-- Les boutons des personnes apparaissent ici -->
-    <div id="people"></div>
-
-    <!-- L’énigme et la vidéo apparaissent ici -->
+    <div id="people">
+        <div class="card" id="personne-0" data-index="0" role="button" tabindex="0">
+            <span id="cadenas-0">🔒</span>
+            <span>Ugo</span>
+        </div>
+        <div class="card" id="personne-1" data-index="1" role="button" tabindex="0">
+            <span id="cadenas-1">🔒</span>
+            <span>Julien</span>
+        </div>
+        <div class="card" id="personne-2" data-index="2" role="button" tabindex="0">
+            <span id="cadenas-2">🔒</span>
+            <span>Victoire</span>
+        </div>
+        <div class="card" id="personne-3" data-index="3" role="button" tabindex="0">
+            <span id="cadenas-3">🔒</span>
+            <span>Hugues &amp; Pauline</span>
+        </div>
+        <div class="card" id="personne-4" data-index="4" role="button" tabindex="0">
+            <span id="cadenas-4">🔒</span>
+            <span>Jerome</span>
+        </div>
+        <div class="card" id="personne-5" data-index="5" role="button" tabindex="0">
+            <span id="cadenas-5">🔒</span>
+            <span>Léa</span>
+        </div>
+        <div class="card" id="personne-6" data-index="6" role="button" tabindex="0">
+            <span id="cadenas-6">🔒</span>
+            <span>Elsa</span>
+        </div>
+        <div class="card" id="personne-7" data-index="7" role="button" tabindex="0">
+            <span id="cadenas-7">🔒</span>
+            <span>Ines</span>
+        </div>
+        <div class="card" id="personne-8" data-index="8" role="button" tabindex="0">
+            <span id="cadenas-8">🔒</span>
+            <span>Papounet &amp; Géraldine</span>
+        </div>
+        <div class="card" id="personne-9" data-index="9" role="button" tabindex="0">
+            <span id="cadenas-9">🔒</span>
+            <span>Thomas C</span>
+        </div>
+        <div class="card" id="personne-10" data-index="10" role="button" tabindex="0">
+            <span id="cadenas-10">🔒</span>
+            <span>Suzy &amp; Claude</span>
+        </div>
+        <div class="card" id="personne-11" data-index="11" role="button" tabindex="0">
+            <span id="cadenas-11">🔒</span>
+            <span>Les Lucht</span>
+        </div>
+        <div class="card" id="personne-12" data-index="12" role="button" tabindex="0">
+            <span id="cadenas-12">🔒</span>
+            <span>Henri</span>
+        </div>
+        <div class="card" id="personne-13" data-index="13" role="button" tabindex="0">
+            <span id="cadenas-13">🔒</span>
+            <span>Lalou</span>
+        </div>
+        <div class="card" id="personne-14" data-index="14" role="button" tabindex="0">
+            <span id="cadenas-14">🔒</span>
+            <span>Pierre C</span>
+        </div>
+        <div class="card" id="personne-15" data-index="15" role="button" tabindex="0">
+            <span id="cadenas-15">🔒</span>
+            <span>Hortense</span>
+        </div>
+        <div class="card" id="personne-16" data-index="16" role="button" tabindex="0">
+            <span id="cadenas-16">🔒</span>
+            <span>TLM</span>
+        </div>
+        <div class="card" id="personne-17" data-index="17" role="button" tabindex="0">
+            <span id="cadenas-17">🔒</span>
+            <span>Salomé</span>
+        </div>
+        <div class="card" id="personne-18" data-index="18" role="button" tabindex="0">
+            <span id="cadenas-18">🔒</span>
+            <span>Juliette</span>
+        </div>
+        <div class="card" id="personne-19" data-index="19" role="button" tabindex="0">
+            <span id="cadenas-19">🔒</span>
+            <span>Granny</span>
+        </div>
+        <div class="card" id="personne-20" data-index="20" role="button" tabindex="0">
+            <span id="cadenas-20">🔒</span>
+            <span>Clotilde &amp; Manu</span>
+        </div>
+        <div class="card" id="personne-21" data-index="21" role="button" tabindex="0">
+            <span id="cadenas-21">🔒</span>
+            <span>Mamounette</span>
+        </div>
+        <div class="card" id="personne-22" data-index="22" role="button" tabindex="0">
+            <span id="cadenas-22">🔒</span>
+            <span>Arthur</span>
+        </div>
+        <div class="card" id="personne-23" data-index="23" role="button" tabindex="0">
+            <span id="cadenas-23">🔒</span>
+            <span>Joseph Noia</span>
+        </div>
+        <div class="card" id="personne-24" data-index="24" role="button" tabindex="0">
+            <span id="cadenas-24">🔒</span>
+            <span>Amaury</span>
+        </div>
+        <div class="card" id="personne-25" data-index="25" role="button" tabindex="0">
+            <span id="cadenas-25">🔒</span>
+            <span>Caroline</span>
+        </div>
+        <div class="card" id="personne-26" data-index="26" role="button" tabindex="0">
+            <span id="cadenas-26">🔒</span>
+            <span>Flo</span>
+        </div>
+        <div class="card" id="personne-27" data-index="27" role="button" tabindex="0">
+            <span id="cadenas-27">🔒</span>
+            <span>Jade</span>
+        </div>
+        <div class="card" id="personne-28" data-index="28" role="button" tabindex="0">
+            <span id="cadenas-28">🔒</span>
+            <span>Tonton</span>
+        </div>
+        <div class="card" id="personne-29" data-index="29" role="button" tabindex="0">
+            <span id="cadenas-29">🔒</span>
+            <span>Maria &amp; Victor</span>
+        </div>
+        <div class="card" id="personne-30" data-index="30" role="button" tabindex="0">
+            <span id="cadenas-30">🔒</span>
+            <span>Maxime</span>
+        </div>
+        <div class="card" id="personne-31" data-index="31" role="button" tabindex="0">
+            <span id="cadenas-31">🔒</span>
+            <span>Wilds Gurls</span>
+        </div>
+        <div class="card" id="personne-32" data-index="32" role="button" tabindex="0">
+            <span id="cadenas-32">🔒</span>
+            <span>Théo</span>
+        </div>
+        <div class="card" id="personne-33" data-index="33" role="button" tabindex="0">
+            <span id="cadenas-33">🔒</span>
+            <span>Thomas DZ</span>
+        </div>
+        <div class="card" id="personne-34" data-index="34" role="button" tabindex="0">
+            <span id="cadenas-34">🔒</span>
+            <span>Granny &amp; Papou</span>
+        </div>
+        <div class="card" id="personne-35" data-index="35" role="button" tabindex="0">
+            <span id="cadenas-35">🔒</span>
+            <span>Matt &amp; Arlette</span>
+        </div>
+    </div>
     <div id="zone"></div>
 
-    <!-- Carte des souvenirs -->
     <div id="section-carte">
-
         <h2>🗺️ La carte des souvenirs</h2>
-
         <p>
             Chaque souvenir débloqué fait apparaître un point sur la carte.
             Les souvenirs ayant le même code postal sont regroupés.
         </p>
-
         <div id="map"></div>
-
-        <div id="message-carte">
-            Chargement de la carte...
-        </div>
-
-        <div id="compteur">
-            0 souvenir débloqué
-        </div>
-
+        <div id="message-carte">Chargement de la carte...</div>
+        <div id="compteur">0 souvenir débloqué</div>
     </div>
-
-    <!--
-    JAVASCRIPT LEAFLET
-
-    ATTENTION :
-    il faut bien conserver leaflet.js ci-dessous.
-    -->
 
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-
-        /*
-        ==================================================
-        DONNÉES À PERSONNALISER
-        ==================================================
-
-        Pour chaque personne, tu peux modifier :
-
-        - enigme
-        - reponses
-        - video
-        - codePostal
-
-        Si plusieurs personnes ont exactement le même
-        code postal, elles seront regroupées sur un seul point.
-        */
-
         const data = [
-
-            {
-                prenom: "Ugo",
-
-                enigme:
-                    "Vomi régulier sur une route particulière lors de vos épopées en voiture.",
-
-                reponses: [
-                    "banquette arrière",
-                    "banquette arriere",
-                    "route de jouques"
-                ],
-
-                video: "ugo.mp4",
-
-                codePostal: "94120"
-            },
-            
-            {
-                prenom: "Julien",
-
-                enigme:
-                    "Lieux où le port de maillot de bain est obligatoire (2 solutions)",
-
-                reponses: [
-                    "REPONSE1",
-                    "Aquagliss de freyming",
-                    "piscine municipale de rians"
-                ],
-
-                video: "julien.mp4",
-
-                codePostal: "75007"
-            },
-            {
-                prenom: "Victoire",
-
-                enigme:
-                    "Lieu de nos retrouvailles quand on s'est armé de courage et qu'on s'est décidé à aller courir",
-
-                reponses: [
-                    "reponse1",
-                    "Port saint sauveur"
-                ],
-
-                video: "victoire.mp4",
-
-                codePostal: "31000"
-            },
-            
-            {
-                prenom: "Hugues & Pauline",
-
-                enigme:
-                    "Jeux qui a causé des dipute dans notre couple",
-
-                reponses: [
-                    "REPONSE1",
-                    "TTMC"
-                ],
-
-                video: "huguesetpauline.mp4",
-
-                codePostal: "31000"
-            },
-            {
-                prenom: "Jerome",
-
-                enigme:
-                    "Je représente la loge...",
-
-                reponses: [
-                    "reponse1",
-                    "familiale"
-                ],
-
-                video: "jerome.mp4",
-
-                codePostal: "78000"
-            },
-            
-            {
-                prenom: "Léa",
-
-                enigme:
-                    "Jeux qui a causé des dipute dans notre couple",
-
-                reponses: [
-                    "REPONSE1",
-                    "lskdf"
-                ],
-
-                video: "lea.mp4",
-
-                codePostal: "31000"
-            },
-            {
-                prenom: "Elsa",
-
-                enigme:
-                    "L'homme de notre vie",
-
-                reponses: [
-                    "reponse1",
-                    "snoopy"
-                ],
-
-                video: "elsa.mp4",
-
-                codePostal: "94120"
-            },
-            {
-                prenom: "Ines",
-
-                enigme:
-                    "Avoir peur de s'endormir à cause d'un film en particulier",
-
-                reponses: [
-                    "reponse1",
-                    "Zodiac"
-                ],
-
-                video: "ines.mp4",
-
-                codePostal: "75007"
-            },
-            
-            {
-                prenom: "Papounet & Géraldine",
-
-                enigme:
-                    "Massif Alpin où tu aurai pu trouver la mort Foudroyé",
-
-                reponses: [
-                    "REPONSE1",
-                    "Massif des ecrins",
-                    "Ecrins"
-                ],
-
-                video: "papounetetgeraldine.mp4",
-
-                codePostal: "75004"
-            },
-            {
-                prenom: "Thomas C",
-
-                enigme:
-                    "Ville de la fameuse frat house",
-
-                reponses: [
-                    "reponse1",
-                    "Berkeley"
-                ],
-
-                video: "thomasc.mp4",
-
-                codePostal: "75007"
-            },
-            {
-                prenom: "Suzy & Claude",
-
-                enigme:
-                    "",
-
-                reponses: [
-                    "REPONSE1",
-                    " ",
-                    "piscine municipale de rians"
-                ],
-
-                video: "suzyetclaude.mp4",
-
-                codePostal: "88000"
-            },
-            {
-                prenom: "Les Lucht",
-
-                enigme:
-                    "Où as-t'on dej pour la premiere fois ensemble a toulouse",
-
-                reponses: [
-                    "place st sernin",
-                    "basilique st sernin",
-                    "reponse1"
-                ],
-
-                video: "lucht.mp4",
-
-                codePostal: "31000"
-            },
-            
-            {
-                prenom: "Henri",
-
-                enigme:
-                    "Ville à la pointe de la gastronomie et de l'industrie automobile",
-
-                reponses: [
-                    "Le mans",
-                    "reponse1"
-                ],
-
-                video: "henri.mp4",
-
-                codePostal: "83560"
-            },
-
-
-            {
-                prenom: "Lalou",
-
-                enigme: "Lieu versaillais possédé par la reine",
-
-                reponses: [
-                    "REPONSE1",
-                    "Hammeau de la reine de versaille"
-                ],
-
-
-                video: "lalou.mp4",
-
-                codePostal: "78000"
-            },
-                {
-                prenom: "Pierre C",
-
-                enigme:
-                    "Nos attaches vauclusiennes nous mêneront un jour à gravir son plus fammeux sommet à vélo. Quizz, quels sont les 3 villages d'où on peut partir ? .",
-
-                reponses: [
-                    "Bedoin Sault Malaucene",
-                    "reponse 1"
-                ],
-
-                video: "pierrec.mp4",
-
-                codePostal: "93210"
-            },
-             {
-                prenom: "Hortense",
-
-                enigme:
-                    "A Rians, c'est un endroit très précis où après de nombreux encouragements tu ose t'élancer",
-
-                reponses: [
-                    "Le plongeoir de la piscine de rians",
-                    "reponse1"
-                ],
-
-                video: "hortense.mp4",
-
-                codePostal: "83560"
-            },
-             {
-                prenom: "TLM",
-
-                enigme:
-                    "Lieu compétition parisiennes",
-
-                reponses: [
-                    "reponse1",
-                    "US Metro"
-                ],
-
-                video: "tlm.mp4",
-
-                codePostal: "75007"
-            },
-            {
-                prenom: "Salomé",
-
-                enigme:
-                    "Notre vie a défilé devant nos yeux lors d'une activité aquatique (réponse le lieu ou l'activité)",
-
-                reponses: [
-                    "REPONSE1",
-                    "Mandelieu",
-                    "Canapé tracté"
-                ],
-
-                video: "salome.mp4",
-
-                codePostal: "75007"
-            },
-
-
-            {
-                prenom: "Juliette",
-
-                enigme: "Restaurant incontournable au lycée",
-
-                reponses: [
-                    "REPONSE1",
-                    "Fuwasaki"
-                ],
-
-
-                video: "juliette.mp4",
-
-                codePostal: "94120"
-            },
-
-            {
-                prenom: "Granny",
-
-                enigme: "Lieu incontournable de ballade à Rians",
-
-                reponses: [
-                    "REPONSE1",
-                    "les collines de Rians"
-                ],
-
-                video: "granny.mp4",
-
-                codePostal: "83560"
-            },
-
-            {
-                prenom: "Clotilde & Manu",
-
-                enigme: "Nom de la Maison emblématique de Batz sur mer",
-
-                reponses: [
-                    "Kerjeannick",
-                    "REPONSE2"
-                ],
-
-                video: "clotildeetmanu.mp4",
-
-                codePostal: "44740"
-            },
-
-
-            {
-                prenom: "Mamounette",
-
-                enigme: "Lieu de notre vie parisienne",
-
-                reponses: [
-                    "reponse1",
-                    "Fontenay-sous-Bois"
-                ],
-
-                video: "mamounette.mp4",
-
-                codePostal: "94120"
-            },
-
-            {
-                prenom: "Arthur",
-
-                enigme: "Ville ou le duc de Bretagne Alain Barbe-Torte a repoussé les Normands",
-
-                reponses: [
-                    "reponse1",
-                    "Batz-sur-mer"
-                ],
-
-                video: "arthur.mp4",
-
-                codePostal: "44740"
-            },
-
-            {
-                prenom: "Joseph Noia",
-
-                enigme: "Ville dont les voyages en Italie vous ont rempli de souvenir",
-
-                reponses: [
-                    "REPONSE1",
-                    "Vico Equense"
-                ],
-
-                video: "josephnoia.mp4",
-
-                codePostal: "94120"
-            },
-            {
-                prenom: "Amaury",
-
-                enigme:
-                    "Animal emblématique pour un trail spécial.",
-
-                reponses: [
-                    "Reponse1",
-                    "sardines"
-                ],
-
-                video: "amaury.mp4",
-
-                codePostal: "93210"
-            },
-            
-            {
-                prenom: "Caroline",
-
-                enigme:
-                    "Lieux où j'ai ma plaque de cliente régulière",
-
-                reponses: [
-                    "REPONSE1",
-                    "Le basard",
-                    "reponse2"
-                ],
-
-                video: "caroline.mp4",
-
-                codePostal: "31000"
-            },
-
-
-            {
-                prenom: "Flo",
-
-                enigme: "C'est MOZART CAPITAINE!!!",
-
-                reponses: [
-                    "REPONSE1",
-                    "JACKSON"
-                ],
-
-
-                video: "flo.mp4",
-
-                codePostal: "75007"
-            },
-                {
-                prenom: "Jade",
-
-                enigme:
-                    "Vomi régulier sur une route particulière lors de vos épopées en voiture.",
-
-                reponses: [
-                    "reponse1",
-                    "banquette arriere",
-                    "route de jouques"
-                ],
-
-                video: "jade.mp4",
-
-                codePostal: "44740"
-            },
-             {
-                prenom: "Tonton",
-
-                enigme:
-                    "Au bout de combien de temps est-on allé te voir à l hopital avec Granny? ",
-
-                reponses: [
-                    "2",
-                    "reponse1"
-                ],
-
-                video: "josephvigier.mp4",
-
-                codePostal: "83560"
-            },
-             {
-                prenom: "Maria & Victor",
-
-                enigme:
-                    "Pays de résidence",
-
-                reponses: [
-                    "reponse1",
-                    "Espagne"
-                ],
-
-                video: "mariavictor.mp4",
-
-                codePostal: "83560"
-            },
-            {
-                prenom: "Maxime",
-
-                enigme:
-                    "Gymnase parisien, antre du Club Mickey",
-
-                reponses: [
-                    "REPONSE1",
-                    "Gymnase Jean Sarrailh",
-                    "Jean Sarrailh"
-                ],
-
-                video: "maxime.mp4",
-
-                codePostal: "75007"
-            },
-
-
-            {
-                prenom: "Wilds Gurls",
-
-                enigme: "Quelle était la matière de notre prof que l'on soupconnais d'avoir une double vie? ",
-
-                reponses: [
-                    "REPONSE1",
-                    "Anglais"
-                ],
-
-
-                video: "paola.mp4",
-
-                codePostal: "94120"
-            },
-
-            {
-                prenom: "Théo",
-
-                enigme: "Lieu incontournable du cyclisme",
-
-                reponses: [
-                    "REPONSE1",
-                    "Velodrome Saint Quentin en Yvelines"
-                ],
-
-                video: "theo.mp4",
-
-                codePostal: "75007"
-            },
-
-            {
-                prenom: "Thomas DZ",
-
-                enigme: "whola",
-
-                reponses: [
-                    "JO",
-                    "REPONSE2"
-                ],
-
-                video: "thomasdmz.mp4",
-
-                codePostal: "93210"
-            },
-
-            {
-                prenom: "Granny & Papou",
-
-                enigme: "Lieu incontournable de ballade à Rians",
-
-                reponses: [
-                    "REPONSE1",
-                    "les collines de Rians"
-                ],
-
-                video: "granny et papou.mp4",
-
-                codePostal: "83560"
-            },
-               {
-                prenom: "Matt & Arlette",
-
-                enigme: "Lieu culturel de notre premier date",
-
-                reponses: [
-                    "REPONSE1",
-                    "La cité de l'espace"
-                ],
-
-                video: "matthieu.mp4",
-
-                codePostal: "31000"
-            },
-
-
+            { prenom: "Ugo", enigme: "Vomi régulier sur une route particulière lors de vos épopées en voiture.", reponses: ["banquette arrière", "banquette arriere", "route de jouques"], video: "ugo.mp4", codePostal: "94120" },
+            { prenom: "Julien", enigme: "Lieux où le port de maillot de bain est obligatoire (2 solutions)", reponses: ["REPONSE1", "Aquagliss de freyming", "piscine municipale de rians"], video: "julien.mp4", codePostal: "75007" },
+            { prenom: "Victoire", enigme: "Lieu de nos retrouvailles quand on s'est armé de courage et qu'on s'est décidé à aller courir", reponses: ["reponse1", "Port saint sauveur"], video: "victoire.mp4", codePostal: "31000" },
+            { prenom: "Hugues & Pauline", enigme: "Jeux qui a causé des dipute dans notre couple", reponses: ["REPONSE1", "TTMC"], video: "huguesetpauline.mp4", codePostal: "31000" },
+            { prenom: "Jerome", enigme: "Je représente la loge...", reponses: ["reponse1", "familiale"], video: "jerome.mp4", codePostal: "78000" },
+            { prenom: "Léa", enigme: "Jeux qui a causé des dipute dans notre couple", reponses: ["REPONSE1", "lskdf"], video: "lea.mp4", codePostal: "31000" },
+            { prenom: "Elsa", enigme: "L'homme de notre vie", reponses: ["reponse1", "snoopy"], video: "elsa.mp4", codePostal: "94120" },
+            { prenom: "Ines", enigme: "Avoir peur de s'endormir à cause d'un film en particulier", reponses: ["reponse1", "Zodiac"], video: "ines.mp4", codePostal: "75007" },
+            { prenom: "Papounet & Géraldine", enigme: "Massif Alpin où tu aurai pu trouver la mort Foudroyé", reponses: ["REPONSE1", "Massif des ecrins", "Ecrins"], video: "papounetetgeraldine.mp4", codePostal: "75004" },
+            { prenom: "Thomas C", enigme: "Ville de la fameuse frat house", reponses: ["reponse1", "Berkeley"], video: "thomasc.mp4", codePostal: "75007" },
+            { prenom: "Suzy & Claude", enigme: "", reponses: ["REPONSE1", " ", "piscine municipale de rians"], video: "suzyetclaude.mp4", codePostal: "88000" },
+            { prenom: "Les Lucht", enigme: "Où as-t'on dej pour la premiere fois ensemble a toulouse", reponses: ["place st sernin", "basilique st sernin", "reponse1"], video: "lucht.mp4", codePostal: "31000" },
+            { prenom: "Henri", enigme: "Ville à la pointe de la gastronomie et de l'industrie automobile", reponses: ["Le mans", "reponse1"], video: "henri.mp4", codePostal: "83560" },
+            { prenom: "Lalou", enigme: "Lieu versaillais possédé par la reine", reponses: ["REPONSE1", "Hammeau de la reine de versaille"], video: "lalou.mp4", codePostal: "78000" },
+            { prenom: "Pierre C", enigme: "Nos attaches vauclusiennes nous mêneront un jour à gravir son plus fammeux sommet à vélo. Quizz, quels sont les 3 villages d'où on peut partir ? .", reponses: ["Bedoin Sault Malaucene", "reponse 1"], video: "pierrec.mp4", codePostal: "93210" },
+            { prenom: "Hortense", enigme: "A Rians, c'est un endroit très précis où après de nombreux encouragements tu ose t'élancer", reponses: ["Le plongeoir de la piscine de rians", "reponse1"], video: "hortense.mp4", codePostal: "83560" },
+            { prenom: "TLM", enigme: "Lieu compétition parisiennes", reponses: ["reponse1", "US Metro"], video: "tlm.mp4", codePostal: "75007" },
+            { prenom: "Salomé", enigme: "Notre vie a défilé devant nos yeux lors d'une activité aquatique (réponse le lieu ou l'activité)", reponses: ["REPONSE1", "Mandelieu", "Canapé tracté"], video: "salome.mp4", codePostal: "75007" },
+            { prenom: "Juliette", enigme: "Restaurant incontournable au lycée", reponses: ["REPONSE1", "Fuwasaki"], video: "juliette.mp4", codePostal: "94120" },
+            { prenom: "Granny", enigme: "Lieu incontournable de ballade à Rians", reponses: ["REPONSE1", "les collines de Rians"], video: "granny.mp4", codePostal: "83560" },
+            { prenom: "Clotilde & Manu", enigme: "Nom de la Maison emblématique de Batz sur mer", reponses: ["Kerjeannick", "REPONSE2"], video: "clotildeetmanu.mp4", codePostal: "44740" },
+            { prenom: "Mamounette", enigme: "Lieu de notre vie parisienne", reponses: ["reponse1", "Fontenay-sous-Bois"], video: "mamounette.mp4", codePostal: "94120" },
+            { prenom: "Arthur", enigme: "Ville ou le duc de Bretagne Alain Barbe-Torte a repoussé les Normands", reponses: ["reponse1", "Batz-sur-mer"], video: "arthur.mp4", codePostal: "44740" },
+            { prenom: "Joseph Noia", enigme: "Ville dont les voyages en Italie vous ont rempli de souvenir", reponses: ["REPONSE1", "Vico Equense"], video: "josephnoia.mp4", codePostal: "94120" },
+            { prenom: "Amaury", enigme: "Animal emblématique pour un trail spécial.", reponses: ["Reponse1", "sardines"], video: "amaury.mp4", codePostal: "93210" },
+            { prenom: "Caroline", enigme: "Lieux où j'ai ma plaque de cliente régulière", reponses: ["REPONSE1", "Le basard", "reponse2"], video: "caroline.mp4", codePostal: "31000" },
+            { prenom: "Flo", enigme: "C'est MOZART CAPITAINE!!!", reponses: ["REPONSE1", "JACKSON"], video: "flo.mp4", codePostal: "75007" },
+            { prenom: "Jade", enigme: "Vomi régulier sur une route particulière lors de vos épopées en voiture.", reponses: ["reponse1", "banquette arriere", "route de jouques"], video: "jade.mp4", codePostal: "44740" },
+            { prenom: "Tonton", enigme: "Au bout de combien de temps est-on allé te voir à l hopital avec Granny? ", reponses: ["2", "reponse1"], video: "josephvigier.mp4", codePostal: "83560" },
+            { prenom: "Maria & Victor", enigme: "Pays de résidence", reponses: ["reponse1", "Espagne"], video: "mariavictor.mp4", codePostal: "83560" },
+            { prenom: "Maxime", enigme: "Gymnase parisien, antre du Club Mickey", reponses: ["REPONSE1", "Gymnase Jean Sarrailh", "Jean Sarrailh"], video: "maxime.mp4", codePostal: "75007" },
+            { prenom: "Wilds Gurls", enigme: "Quelle était la matière de notre prof que l'on soupconnais d'avoir une double vie? ", reponses: ["REPONSE1", "Anglais"], video: "paola.mp4", codePostal: "94120" },
+            { prenom: "Théo", enigme: "Lieu incontournable du cyclisme", reponses: ["REPONSE1", "Velodrome Saint Quentin en Yvelines"], video: "theo.mp4", codePostal: "75007" },
+            { prenom: "Thomas DZ", enigme: "whola", reponses: ["JO", "REPONSE2"], video: "thomasdmz.mp4", codePostal: "93210" },
+            { prenom: "Granny & Papou", enigme: "Lieu incontournable de ballade à Rians", reponses: ["REPONSE1", "les collines de Rians"], video: "granny et papou.mp4", codePostal: "83560" },
+            { prenom: "Matt & Arlette", enigme: "Lieu culturel de notre premier date", reponses: ["REPONSE1", "La cité de l'espace"], video: "matthieu.mp4", codePostal: "31000" }
         ];
 
-        /*
-        ==================================================
-        VARIABLES
-        ==================================================
-        */
-
         let courant = null;
-
         let map = null;
-
         let carteDisponible = false;
-
-        /*
-        Un seul lieu est créé pour chaque code postal.
-        */
+        let coucheBulles = null;
+        let miseAJourBullesProgrammee = false;
 
         const lieuxParCodePostal = {};
-
-        /*
-        Cette liste empêche une personne d’être ajoutée
-        plusieurs fois.
-        */
-
         const souvenirsDebloques = new Set();
-
         const people = document.getElementById("people");
 
         /*
-        ==================================================
-        AFFICHAGE DES NOMS
-        ==================================================
-
-        Les noms sont créés immédiatement, avant même
-        l’initialisation de la carte.
+        Les cartes sont présentes directement dans le HTML afin que
+        les prénoms soient visibles même dans un aperçu statique.
+        JavaScript ajoute uniquement les interactions.
         */
 
-        data.forEach(function(personne, index) {
+        document
+            .querySelectorAll("#people .card")
+            .forEach(function(cartePersonne) {
+                const index = Number(
+                    cartePersonne.dataset.index
+                );
 
-            const cartePersonne =
-                document.createElement("div");
+                cartePersonne.addEventListener(
+                    "click",
+                    function() {
+                        ouvrir(index);
+                    }
+                );
 
-            cartePersonne.className = "card";
-
-            cartePersonne.id =
-                "personne-" + index;
-
-            cartePersonne.innerHTML = `
-                <span id="cadenas-${index}">🔒</span>
-                <span>${personne.prenom}</span>
-            `;
-
-            cartePersonne.addEventListener(
-                "click",
-                function() {
-                    ouvrir(index);
-                }
-            );
-
-            people.appendChild(cartePersonne);
-
-        });
-
-        /*
-        ==================================================
-        OUVERTURE DE L’ÉNIGME
-        ==================================================
-        */
+                cartePersonne.addEventListener(
+                    "keydown",
+                    function(event) {
+                        if (
+                            event.key === "Enter" ||
+                            event.key === " "
+                        ) {
+                            event.preventDefault();
+                            ouvrir(index);
+                        }
+                    }
+                );
+            });
 
         function ouvrir(index) {
-
             courant = data[index];
-
             courant.index = index;
 
             document.getElementById("zone").innerHTML = `
+                <div class="bloc-question">
+                    <h2>${echapperHTML(courant.prenom)}</h2>
 
-                <h2>${courant.prenom}</h2>
+                    <p class="question">
+                        ${echapperHTML(courant.enigme || "Aucune question n’a encore été renseignée.")}
+                    </p>
 
-                <p>${courant.enigme}</p>
+                    <div class="zone-reponse">
+                        <input
+                            id="rep"
+                            type="text"
+                            placeholder="Votre réponse"
+                            autocomplete="off"
+                        >
 
-                <input
-                    id="rep"
-                    type="text"
-                    placeholder="Votre réponse"
-                    autocomplete="off"
-                >
+                        <button
+                            type="button"
+                            onclick="verifier()"
+                        >
+                            Valider
+                        </button>
+                    </div>
 
-                <br>
-
-                <button
-                    type="button"
-                    onclick="verifier()"
-                >
-                    Valider
-                </button>
-
-                <div id="resultat"></div>
+                    <div id="resultat"></div>
+                </div>
             `;
 
-            const champReponse =
-                document.getElementById("rep");
-
+            const champReponse = document.getElementById("rep");
             champReponse.focus();
+            champReponse.addEventListener("keydown", function(event) {
+                if (event.key === "Enter") verifier();
+            });
 
-            champReponse.addEventListener(
-                "keydown",
-                function(event) {
-
-                    if (event.key === "Enter") {
-                        verifier();
-                    }
-                }
-            );
-
-            document
-                .getElementById("zone")
-                .scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-
+            document.getElementById("zone").scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
-        /*
-        ==================================================
-        NORMALISATION DES RÉPONSES
-        ==================================================
-
-        Cela permet d’ignorer :
-
-        - les majuscules ;
-        - les accents ;
-        - les espaces en trop.
-        */
-
         function normaliserTexte(texte) {
-
             return String(texte)
                 .trim()
                 .toLowerCase()
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "")
                 .replace(/\s+/g, " ");
-
         }
 
-        /*
-        ==================================================
-        VÉRIFICATION DE LA RÉPONSE
-        ==================================================
-        */
+        function echapperHTML(valeur) {
+            return String(valeur)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
         function verifier() {
+            if (!courant) return;
 
-            if (!courant) {
-                return;
-            }
-
-            const champReponse =
-                document.getElementById("rep");
-
-            const resultat =
-                document.getElementById("resultat");
-
-            const reponseUtilisateur =
-                normaliserTexte(
-                    champReponse.value
-                );
-
-            const correcte =
-                courant.reponses.some(
-                    function(reponseAcceptee) {
-
-                        return normaliserTexte(
-                            reponseAcceptee
-                        ) === reponseUtilisateur;
-                    }
-                );
+            const champReponse = document.getElementById("rep");
+            const resultat = document.getElementById("resultat");
+            const reponseUtilisateur = normaliserTexte(champReponse.value);
+            const correcte = courant.reponses.some(function(reponseAcceptee) {
+                return normaliserTexte(reponseAcceptee) === reponseUtilisateur;
+            });
 
             if (correcte) {
-
-                const adresseVideo =
-                    encodeURI(courant.video);
-
+                const adresseVideo = encodeURI(courant.video);
                 resultat.innerHTML = `
-
-                    <p class="reussi">
-                        ✅ Bonne réponse !
-                    </p>
-
-                    <video
-                        controls
-                        playsinline
-                        preload="metadata"
-                    >
-
-                        <source
-                            src="${adresseVideo}"
-                            type="video/mp4"
-                        >
-
+                    <p class="reussi">✅ Bonne réponse !</p>
+                    <video controls playsinline preload="metadata">
+                        <source src="${adresseVideo}" type="video/mp4">
                         Votre navigateur ne supporte pas cette vidéo.
-
                     </video>
-
-                    <p
-                        id="etat-carte"
-                        class="information"
-                    >
-                        📍 Ajout du souvenir sur la carte...
-                    </p>
+                    <p id="etat-carte" class="information">📍 Ajout du souvenir sur la carte...</p>
                 `;
 
                 debloquerPersonne(courant.index);
-
                 ajouterPointAvecCodePostal(courant);
-
             } else {
-
-                resultat.innerHTML = `
-
-                    <p class="erreur">
-                        ❌ Mauvaise réponse
-                    </p>
-                `;
+                resultat.innerHTML = `<p class="erreur">❌ Mauvaise réponse</p>`;
             }
-
         }
-
-        /*
-        ==================================================
-        DÉBLOCAGE VISUEL
-        ==================================================
-        */
 
         function debloquerPersonne(index) {
-
-            const cartePersonne =
-                document.getElementById(
-                    "personne-" + index
-                );
-
-            const cadenas =
-                document.getElementById(
-                    "cadenas-" + index
-                );
-
-            if (cartePersonne) {
-
-                cartePersonne.classList.add(
-                    "debloquee"
-                );
-            }
-
-            if (cadenas) {
-
-                cadenas.textContent = "🔓";
-            }
-
+            const cartePersonne = document.getElementById("personne-" + index);
+            const cadenas = document.getElementById("cadenas-" + index);
+            if (cartePersonne) cartePersonne.classList.add("debloquee");
+            if (cadenas) cadenas.textContent = "🔓";
         }
 
-        /*
-        ==================================================
-        INITIALISATION DE LA CARTE
-        ==================================================
-        */
-
         function initialiserCarte() {
-
-            const messageCarte =
-                document.getElementById(
-                    "message-carte"
-                );
+            const messageCarte = document.getElementById("message-carte");
 
             try {
-
                 if (typeof L === "undefined") {
-
                     carteDisponible = false;
-
-                    messageCarte.textContent =
-                        "⚠️ La carte n’a pas pu être chargée, mais les énigmes et les vidéos restent disponibles.";
-
+                    messageCarte.textContent = "⚠️ La carte n’a pas pu être chargée, mais les énigmes et les vidéos restent disponibles.";
                     return;
                 }
 
-                map = L.map("map").setView(
-                    [46.603354, 1.888334],
-                    6
-                );
+                map = L.map("map").setView([46.603354, 1.888334], 6);
 
-                L.tileLayer(
-                    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    {
-                        minZoom: 3,
-                        maxZoom: 19,
-                        attribution: "&copy; OpenStreetMap"
-                    }
-                ).addTo(map);
+                L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    minZoom: 3,
+                    maxZoom: 19,
+                    attribution: "&copy; OpenStreetMap"
+                }).addTo(map);
+
+                coucheBulles = L.layerGroup().addTo(map);
+
+                map.on("zoomend moveend resize", programmerPlacementBulles);
 
                 carteDisponible = true;
+                messageCarte.textContent = "La carte est prête. Débloque un souvenir pour faire apparaître un point.";
 
-                messageCarte.textContent =
-                    "La carte est prête. Débloque un souvenir pour faire apparaître un point.";
-
-                setTimeout(
-                    function() {
-
-                        map.invalidateSize();
-                    },
-                    300
-                );
-
+                setTimeout(function() {
+                    map.invalidateSize();
+                    programmerPlacementBulles();
+                }, 300);
             } catch (erreur) {
-
-                console.error(
-                    "Erreur de chargement de la carte :",
-                    erreur
-                );
-
+                console.error("Erreur de chargement de la carte :", erreur);
                 carteDisponible = false;
-
-                messageCarte.textContent =
-                    "⚠️ La carte n’a pas pu être chargée, mais les vidéos restent disponibles.";
+                messageCarte.textContent = "⚠️ La carte n’a pas pu être chargée, mais les vidéos restent disponibles.";
             }
-
         }
-
-        /*
-        ==================================================
-        AJOUT D’UNE PERSONNE SUR LA CARTE
-        ==================================================
-        */
 
         async function ajouterPointAvecCodePostal(personne) {
-
-            const etatCarte =
-                document.getElementById(
-                    "etat-carte"
-                );
+            const etatCarte = document.getElementById("etat-carte");
 
             if (!carteDisponible || !map) {
-
-                if (etatCarte) {
-
-                    etatCarte.textContent =
-                        "⚠️ La vidéo est débloquée, mais la carte n’est pas disponible.";
-                }
-
+                if (etatCarte) etatCarte.textContent = "⚠️ La vidéo est débloquée, mais la carte n’est pas disponible.";
                 return;
             }
 
-            const codePostal =
-                String(personne.codePostal).trim();
+            const codePostal = String(personne.codePostal).trim();
 
-            if (
-                !/^\d{5}$/.test(codePostal) ||
-                codePostal === "00000"
-            ) {
-
-                if (etatCarte) {
-
-                    etatCarte.textContent =
-                        "⚠️ La vidéo est débloquée, mais aucun code postal valide n’a été renseigné.";
-                }
-
+            if (!/^\d{5}$/.test(codePostal) || codePostal === "00000") {
+                if (etatCarte) etatCarte.textContent = "⚠️ La vidéo est débloquée, mais aucun code postal valide n’a été renseigné.";
                 return;
             }
 
-            /*
-            La personne a déjà été ajoutée.
-            */
-
-            if (
-                souvenirsDebloques.has(
-                    personne.prenom
-                )
-            ) {
-
-                const lieuExistant =
-                    lieuxParCodePostal[codePostal];
-
+            if (souvenirsDebloques.has(personne.prenom)) {
+                const lieuExistant = lieuxParCodePostal[codePostal];
                 if (lieuExistant) {
-
-                    map.setView(
-                        [
-                            lieuExistant.latitude,
-                            lieuExistant.longitude
-                        ],
-                        11
-                    );
-
+                    map.setView([lieuExistant.latitude, lieuExistant.longitude], 11);
                     lieuExistant.marqueur.openPopup();
-
-                    if (etatCarte) {
-
-                        etatCarte.textContent =
-                            "📍 Ce souvenir est déjà présent sur la carte.";
-                    }
-
+                    if (etatCarte) etatCarte.textContent = "📍 Ce souvenir est déjà présent sur la carte.";
                     faireDefilerVersCarte();
                 }
-
                 return;
             }
-
-            /*
-            Le code postal existe déjà.
-
-            La nouvelle personne est ajoutée au point existant.
-            */
 
             if (lieuxParCodePostal[codePostal]) {
-
-                const lieu =
-                    lieuxParCodePostal[codePostal];
-
-                if (
-                    !lieu.personnes.includes(
-                        personne.prenom
-                    )
-                ) {
-
-                    lieu.personnes.push(
-                        personne.prenom
-                    );
-                }
-
-                souvenirsDebloques.add(
-                    personne.prenom
-                );
-
-                mettreAJourPointGroupe(
-                    codePostal
-                );
-
+                const lieu = lieuxParCodePostal[codePostal];
+                if (!lieu.personnes.includes(personne.prenom)) lieu.personnes.push(personne.prenom);
+                souvenirsDebloques.add(personne.prenom);
+                mettreAJourPointGroupe(codePostal);
                 mettreAJourCompteur();
-
-                map.setView(
-                    [
-                        lieu.latitude,
-                        lieu.longitude
-                    ],
-                    11
-                );
-
+                map.setView([lieu.latitude, lieu.longitude], 11);
                 lieu.marqueur.openPopup();
-
-                if (etatCarte) {
-
-                    etatCarte.textContent =
-                        "📍 " +
-                        personne.prenom +
-                        " a été ajouté au point de " +
-                        lieu.commune +
-                        ".";
-                }
-
+                if (etatCarte) etatCarte.textContent = "📍 " + personne.prenom + " a été ajouté au point de " + lieu.commune + ".";
                 faireDefilerVersCarte();
-
                 return;
             }
-
-            /*
-            Nouveau code postal.
-
-            Recherche des coordonnées de la commune.
-            */
 
             try {
+                if (etatCarte) etatCarte.textContent = "📍 Recherche du code postal " + codePostal + "...";
 
-                if (etatCarte) {
+                let nomCommune;
+                let latitude;
+                let longitude;
 
-                    etatCarte.textContent =
-                        "📍 Recherche du code postal " +
-                        codePostal +
-                        "...";
+                /* Rians est fixé localement pour garantir le bon résultat. */
+                if (codePostal === "83560") {
+                    nomCommune = "Rians";
+                    latitude = 43.6069;
+                    longitude = 5.7553;
+                } else {
+                    const adresseAPI = "https://geo.api.gouv.fr/communes" +
+                        "?codePostal=" + encodeURIComponent(codePostal) +
+                        "&fields=nom,centre,codesPostaux" +
+                        "&format=json" +
+                        "&geometry=centre";
+
+                    const reponse = await fetch(adresseAPI);
+                    if (!reponse.ok) throw new Error("Le service géographique n’a pas répondu correctement.");
+
+                    const communes = await reponse.json();
+                    if (!Array.isArray(communes) || communes.length === 0) throw new Error("Aucune commune trouvée.");
+
+                    const commune = communes[0];
+                    if (!commune.centre || !Array.isArray(commune.centre.coordinates)) throw new Error("Coordonnées indisponibles.");
+
+                    longitude = commune.centre.coordinates[0];
+                    latitude = commune.centre.coordinates[1];
+                    nomCommune = commune.nom;
                 }
 
-                const adresseAPI =
-                    "https://geo.api.gouv.fr/communes" +
-                    "?codePostal=" +
-                    encodeURIComponent(codePostal) +
-                    "&fields=nom,centre,codesPostaux" +
-                    "&format=json" +
-                    "&geometry=centre";
-
-                const reponse =
-                    await fetch(adresseAPI);
-
-                if (!reponse.ok) {
-
-                    throw new Error(
-                        "Le service géographique n’a pas répondu correctement."
-                    );
-                }
-
-                const communes =
-                    await reponse.json();
-
-                if (
-                    !Array.isArray(communes) ||
-                    communes.length === 0
-                ) {
-
-                    throw new Error(
-                        "Aucune commune trouvée."
-                    );
-                }
-
-                const commune =
-                    communes[0];
-
-                if (
-                    !commune.centre ||
-                    !Array.isArray(
-                        commune.centre.coordinates
-                    )
-                ) {
-
-                    throw new Error(
-                        "Coordonnées indisponibles."
-                    );
-                }
-
-                /*
-                L’ordre reçu est :
-
-                longitude, latitude
-                */
-
-                const longitude =
-                    commune.centre.coordinates[0];
-
-                const latitude =
-                    commune.centre.coordinates[1];
-
-                const nomCommune =
-                    commune.nom;
-
-                /*
-                Un cercle est utilisé afin que le point
-                puisse grossir.
-                */
-
-                const marqueur =
-                    L.circleMarker(
-                        [latitude, longitude],
-                        {
-                            radius: 10,
-                            color: "#ffffff",
-                            weight: 3,
-                            fillColor: "#ef4444",
-                            fillOpacity: 0.9
-                        }
-                    ).addTo(map);
+                const marqueur = L.circleMarker([latitude, longitude], {
+                    radius: 10,
+                    color: "#ffffff",
+                    weight: 3,
+                    fillColor: "#ef4444",
+                    fillOpacity: 0.9
+                }).addTo(map);
 
                 lieuxParCodePostal[codePostal] = {
-
                     marqueur: marqueur,
-
-                    personnes: [
-                        personne.prenom
-                    ],
-
+                    marqueurBulle: null,
+                    personnes: [personne.prenom],
                     commune: nomCommune,
-
                     latitude: latitude,
-
-                    longitude: longitude
+                    longitude: longitude,
+                    rayon: 10,
+                    htmlBulle: ""
                 };
 
-                souvenirsDebloques.add(
-                    personne.prenom
-                );
-
-                mettreAJourPointGroupe(
-                    codePostal
-                );
-
+                souvenirsDebloques.add(personne.prenom);
+                mettreAJourPointGroupe(codePostal);
                 mettreAJourCompteur();
+                map.setView([latitude, longitude], 11);
 
-                map.setView(
-                    [latitude, longitude],
-                    11
-                );
+                setTimeout(function() {
+                    map.invalidateSize();
+                    programmerPlacementBulles();
+                    marqueur.openPopup();
+                }, 200);
 
-                setTimeout(
-                    function() {
-
-                        map.invalidateSize();
-
-                        marqueur.openPopup();
-                    },
-                    200
-                );
-
-                if (etatCarte) {
-
-                    etatCarte.textContent =
-                        "📍 Point ajouté sur la carte : " +
-                        nomCommune +
-                        ".";
-                }
-
+                if (etatCarte) etatCarte.textContent = "📍 Point ajouté sur la carte : " + nomCommune + ".";
                 faireDefilerVersCarte();
-
             } catch (erreur) {
-
-                console.error(
-                    "Erreur de géolocalisation :",
-                    erreur
-                );
-
-                if (etatCarte) {
-
-                    etatCarte.textContent =
-                        "⚠️ La vidéo est débloquée, mais le code postal n’a pas pu être placé sur la carte.";
-                }
+                console.error("Erreur de géolocalisation :", erreur);
+                if (etatCarte) etatCarte.textContent = "⚠️ La vidéo est débloquée, mais le code postal n’a pas pu être placé sur la carte.";
             }
-
         }
 
-        /*
-        ==================================================
-        AGRANDISSEMENT ET LISTE DES NOMS
-        ==================================================
-        */
-
         function mettreAJourPointGroupe(codePostal) {
+            const lieu = lieuxParCodePostal[codePostal];
+            if (!lieu) return;
 
-            const lieu =
-                lieuxParCodePostal[codePostal];
-
-            if (!lieu) {
-                return;
-            }
-
-            const nombrePersonnes =
-                lieu.personnes.length;
-
-            /*
-            Le point grossit de 5 pixels
-            par personne supplémentaire.
-            */
-
-            const nouveauRayon =
-                Math.min(
-                    10 +
-                    ((nombrePersonnes - 1) * 5),
-                    35
-                );
-
-            /*
-            Couleur selon le nombre de personnes.
-            */
+            const nombrePersonnes = lieu.personnes.length;
+            const nouveauRayon = Math.min(10 + ((nombrePersonnes - 1) * 5), 35);
 
             let couleurPoint = "#ef4444";
+            if (nombrePersonnes === 2) couleurPoint = "#f97316";
+            else if (nombrePersonnes === 3) couleurPoint = "#eab308";
+            else if (nombrePersonnes >= 4) couleurPoint = "#22c55e";
 
-            if (nombrePersonnes === 2) {
-
-                couleurPoint = "#f97316";
-
-            } else if (nombrePersonnes === 3) {
-
-                couleurPoint = "#eab308";
-
-            } else if (nombrePersonnes >= 4) {
-
-                couleurPoint = "#22c55e";
-            }
-
-            lieu.marqueur.setRadius(
-                nouveauRayon
-            );
-
+            lieu.rayon = nouveauRayon;
+            lieu.marqueur.setRadius(nouveauRayon);
             lieu.marqueur.setStyle({
                 fillColor: couleurPoint,
                 color: "#ffffff",
@@ -1585,206 +771,240 @@
                 fillOpacity: 0.9
             });
 
-            /*
-            Liste destinée à la fenêtre ouverte au clic.
-            */
+            const listeNomsPopup = lieu.personnes.map(function(nom) {
+                return `<li>🎬 ${echapperHTML(nom)}</li>`;
+            }).join("");
 
-            const listeNomsPopup =
-                lieu.personnes
-                    .map(function(nom) {
-
-                        return `
-                            <li>🎬 ${nom}</li>
-                        `;
-                    })
-                    .join("");
-
-            /*
-            Liste destinée à l’étiquette permanente.
-            */
-
-            const listeNomsVisible =
-                lieu.personnes
-                    .map(function(nom) {
-
-                        return `
-                            <span class="nom-personne">
-                                🎬 ${nom}
-                            </span>
-                        `;
-                    })
-                    .join("");
-
-            /*
-            Fenêtre au clic.
-            */
+            const listeNomsVisible = lieu.personnes.map(function(nom) {
+                return `<span class="nom-personne">🎬 ${echapperHTML(nom)}</span>`;
+            }).join("");
 
             lieu.marqueur.bindPopup(`
-
-                <div
-                    style="
-                        text-align:left;
-                        color:#111827;
-                        min-width:190px;
-                    "
-                >
-
-                    <div
-                        style="
-                            text-align:center;
-                            font-size:17px;
-                            font-weight:bold;
-                            margin-bottom:8px;
-                        "
-                    >
-                        📍 ${lieu.commune}
-                    </div>
-
-                    <div
-                        style="
-                            text-align:center;
-                            margin-bottom:8px;
-                        "
-                    >
-                        Code postal : ${codePostal}
-                    </div>
-
-                    <strong>
-                        Souvenirs débloqués :
-                    </strong>
-
-                    <ul
-                        style="
-                            margin:8px 0 0;
-                            padding-left:20px;
-                        "
-                    >
-                        ${listeNomsPopup}
-                    </ul>
-
+                <div style="text-align:left;color:#111827;min-width:190px;">
+                    <div style="text-align:center;font-size:17px;font-weight:bold;margin-bottom:8px;">📍 ${echapperHTML(lieu.commune)}</div>
+                    <div style="text-align:center;margin-bottom:8px;">Code postal : ${echapperHTML(codePostal)}</div>
+                    <strong>Souvenirs débloqués :</strong>
+                    <ul style="margin:8px 0 0;padding-left:20px;">${listeNomsPopup}</ul>
                 </div>
             `);
 
-            /*
-            Suppression de l’ancienne liste avant
-            de créer la nouvelle.
-            */
-
-            lieu.marqueur.unbindTooltip();
-
-            /*
-            Liste permanente à droite du point.
-            */
-
-            lieu.marqueur.bindTooltip(
-                `
-
-                <div>
-
-                    <span class="titre-lieu">
-                        📍 ${lieu.commune}
-                    </span>
-
-                    <span class="nombre-souvenirs">
-                        ${nombrePersonnes}
-                        ${
-                            nombrePersonnes > 1
-                                ? "souvenirs"
-                                : "souvenir"
-                        }
-                    </span>
-
+            lieu.htmlBulle = `
+                <div class="bulle-souvenirs" data-code-postal="${echapperHTML(codePostal)}">
+                    <span class="titre-lieu">📍 ${echapperHTML(lieu.commune)}</span>
+                    <span class="nombre-souvenirs">${nombrePersonnes} ${nombrePersonnes > 1 ? "souvenirs" : "souvenir"}</span>
                     ${listeNomsVisible}
-
                 </div>
-                `,
-                {
-                    permanent: true,
-                    direction: "right",
-                    offset: [
-                        nouveauRayon + 5,
-                        0
-                    ],
-                    className: "liste-souvenirs",
-                    opacity: 1
-                }
-            );
+            `;
 
-            lieu.marqueur.openTooltip();
-
+            creerOuMettreAJourBulle(codePostal);
+            programmerPlacementBulles();
         }
 
-        /*
-        ==================================================
-        DÉFILEMENT VERS LA CARTE
-        ==================================================
-        */
+        function creerOuMettreAJourBulle(codePostal) {
+            const lieu = lieuxParCodePostal[codePostal];
+            if (!lieu || !map || !coucheBulles) return;
 
-        function faireDefilerVersCarte() {
-
-            setTimeout(
-                function() {
-
-                    document
-                        .getElementById(
-                            "section-carte"
-                        )
-                        .scrollIntoView({
-                            behavior: "smooth",
-                            block: "start"
-                        });
-                },
-                500
-            );
-
-        }
-
-        /*
-        ==================================================
-        COMPTEUR
-        ==================================================
-        */
-
-        function mettreAJourCompteur() {
-
-            const nombre =
-                souvenirsDebloques.size;
-
-            let texte;
-
-            if (nombre === 0) {
-
-                texte =
-                    "0 souvenir débloqué";
-
-            } else if (nombre === 1) {
-
-                texte =
-                    "1 souvenir débloqué";
-
-            } else {
-
-                texte =
-                    nombre +
-                    " souvenirs débloqués";
+            if (lieu.marqueurBulle) {
+                coucheBulles.removeLayer(lieu.marqueurBulle);
+                lieu.marqueurBulle = null;
             }
 
-            document
-                .getElementById("compteur")
-                .textContent = texte;
+            const iconeBulle = L.divIcon({
+                className: "marqueur-liste-souvenirs",
+                html: lieu.htmlBulle,
+                iconSize: null,
+                iconAnchor: [0, 0]
+            });
 
+            lieu.marqueurBulle = L.marker([lieu.latitude, lieu.longitude], {
+                icon: iconeBulle,
+                interactive: true,
+                keyboard: false,
+                riseOnHover: true,
+                zIndexOffset: 1000
+            }).addTo(coucheBulles);
+
+            lieu.marqueurBulle.on("click", function() {
+                map.setView([lieu.latitude, lieu.longitude], Math.max(map.getZoom(), 11));
+                lieu.marqueur.openPopup();
+            });
         }
 
-        /*
-        ==================================================
-        DÉMARRAGE
-        ==================================================
-        */
+        function programmerPlacementBulles() {
+            if (miseAJourBullesProgrammee) return;
+            miseAJourBullesProgrammee = true;
+
+            requestAnimationFrame(function() {
+                miseAJourBullesProgrammee = false;
+                placerBullesSansChevauchement();
+            });
+        }
+
+        function rectanglesSeChevauchent(a, b, marge) {
+            return !(
+                a.droite + marge <= b.gauche ||
+                a.gauche >= b.droite + marge ||
+                a.bas + marge <= b.haut ||
+                a.haut >= b.bas + marge
+            );
+        }
+
+        function placerBullesSansChevauchement() {
+            if (!map || !coucheBulles) return;
+
+            const tailleCarte = map.getSize();
+            const margeCarte = 8;
+            const margeEntreBulles = 10;
+            const rectanglesPlaces = [];
+
+            const lieux = Object.keys(lieuxParCodePostal)
+                .map(function(codePostal) {
+                    return { codePostal: codePostal, lieu: lieuxParCodePostal[codePostal] };
+                })
+                .filter(function(element) {
+                    return element.lieu && element.lieu.marqueurBulle && map.hasLayer(element.lieu.marqueurBulle);
+                });
+
+            const centreCartePixels = map.latLngToLayerPoint(map.getCenter());
+
+            lieux.sort(function(a, b) {
+                const pointA = map.latLngToLayerPoint([a.lieu.latitude, a.lieu.longitude]);
+                const pointB = map.latLngToLayerPoint([b.lieu.latitude, b.lieu.longitude]);
+                return pointA.distanceTo(centreCartePixels) - pointB.distanceTo(centreCartePixels);
+            });
+
+            lieux.forEach(function(element) {
+                const lieu = element.lieu;
+                const elementBulle = lieu.marqueurBulle.getElement();
+                if (!elementBulle) return;
+
+                const contenuBulle = elementBulle.querySelector(".bulle-souvenirs");
+                if (!contenuBulle) return;
+
+                /*
+                Ne jamais modifier elementBulle.style.transform :
+                Leaflet utilise cette propriété pour positionner le marqueur.
+                On remet uniquement à zéro nos marges personnalisées.
+                */
+                elementBulle.style.marginLeft = "0px";
+                elementBulle.style.marginTop = "0px";
+
+                const largeur = contenuBulle.offsetWidth;
+                const hauteur = contenuBulle.offsetHeight;
+                const pointOrigine = map.latLngToLayerPoint([lieu.latitude, lieu.longitude]);
+                const rayon = lieu.rayon || 10;
+
+                const positionsPossibles = [
+                    { x: rayon + 12, y: -(hauteur / 2) },
+                    { x: -(largeur + rayon + 12), y: -(hauteur / 2) },
+                    { x: -(largeur / 2), y: -(hauteur + rayon + 12) },
+                    { x: -(largeur / 2), y: rayon + 12 },
+                    { x: rayon + 12, y: -(hauteur + rayon + 8) },
+                    { x: -(largeur + rayon + 12), y: -(hauteur + rayon + 8) },
+                    { x: rayon + 12, y: rayon + 8 },
+                    { x: -(largeur + rayon + 12), y: rayon + 8 }
+                ];
+
+                let meilleurePosition = null;
+
+                for (let i = 0; i < positionsPossibles.length; i++) {
+                    const position = positionsPossibles[i];
+                    const rectangle = {
+                        gauche: pointOrigine.x + position.x,
+                        haut: pointOrigine.y + position.y,
+                        droite: pointOrigine.x + position.x + largeur,
+                        bas: pointOrigine.y + position.y + hauteur
+                    };
+
+                    const dansLaCarte =
+                        rectangle.gauche >= margeCarte &&
+                        rectangle.haut >= margeCarte &&
+                        rectangle.droite <= tailleCarte.x - margeCarte &&
+                        rectangle.bas <= tailleCarte.y - margeCarte;
+
+                    if (!dansLaCarte) continue;
+
+                    const chevauchement = rectanglesPlaces.some(function(rectanglePlace) {
+                        return rectanglesSeChevauchent(rectangle, rectanglePlace, margeEntreBulles);
+                    });
+
+                    if (!chevauchement) {
+                        meilleurePosition = { position: position, rectangle: rectangle };
+                        break;
+                    }
+                }
+
+                if (!meilleurePosition) {
+                    const pas = Math.max(30, Math.round(hauteur / 2));
+
+                    for (let distance = 0; distance <= 1000 && !meilleurePosition; distance += pas) {
+                        const decalages = distance === 0 ? [0] : [distance, -distance];
+
+                        for (let d = 0; d < decalages.length && !meilleurePosition; d++) {
+                            const positionsSecours = [
+                                { x: rayon + 12, y: -(hauteur / 2) + decalages[d] },
+                                { x: -(largeur + rayon + 12), y: -(hauteur / 2) + decalages[d] }
+                            ];
+
+                            for (let s = 0; s < positionsSecours.length; s++) {
+                                const position = positionsSecours[s];
+                                const gauche = Math.max(margeCarte, Math.min(pointOrigine.x + position.x, tailleCarte.x - largeur - margeCarte));
+                                const haut = Math.max(margeCarte, Math.min(pointOrigine.y + position.y, tailleCarte.y - hauteur - margeCarte));
+                                const rectangle = {
+                                    gauche: gauche,
+                                    haut: haut,
+                                    droite: gauche + largeur,
+                                    bas: haut + hauteur
+                                };
+
+                                const chevauchement = rectanglesPlaces.some(function(rectanglePlace) {
+                                    return rectanglesSeChevauchent(rectangle, rectanglePlace, margeEntreBulles);
+                                });
+
+                                if (!chevauchement) {
+                                    meilleurePosition = {
+                                        position: { x: gauche - pointOrigine.x, y: haut - pointOrigine.y },
+                                        rectangle: rectangle
+                                    };
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!meilleurePosition) {
+                    const gauche = Math.max(margeCarte, Math.min(pointOrigine.x + rayon + 12, tailleCarte.x - largeur - margeCarte));
+                    const haut = Math.max(margeCarte, Math.min(pointOrigine.y - (hauteur / 2), tailleCarte.y - hauteur - margeCarte));
+                    meilleurePosition = {
+                        position: { x: gauche - pointOrigine.x, y: haut - pointOrigine.y },
+                        rectangle: { gauche: gauche, haut: haut, droite: gauche + largeur, bas: haut + hauteur }
+                    };
+                }
+
+                /* Leaflet utilise déjà transform pour placer ses marqueurs. On ajoute le décalage via margin. */
+                elementBulle.style.marginLeft = Math.round(meilleurePosition.position.x) + "px";
+                elementBulle.style.marginTop = Math.round(meilleurePosition.position.y) + "px";
+
+                rectanglesPlaces.push(meilleurePosition.rectangle);
+            });
+        }
+
+        function faireDefilerVersCarte() {
+            setTimeout(function() {
+                document.getElementById("section-carte").scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 500);
+        }
+
+        function mettreAJourCompteur() {
+            const nombre = souvenirsDebloques.size;
+            let texte = "0 souvenir débloqué";
+            if (nombre === 1) texte = "1 souvenir débloqué";
+            else if (nombre > 1) texte = nombre + " souvenirs débloqués";
+            document.getElementById("compteur").textContent = texte;
+        }
 
         initialiserCarte();
-
     </script>
-
 </body>
-
 </html>
